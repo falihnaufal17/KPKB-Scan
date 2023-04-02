@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Button, MD3Colors } from 'react-native-paper'
 
@@ -23,4 +23,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default ListHeader
+export default memo(ListHeader, (prevState, nextState) => JSON.stringify(prevState) === JSON.stringify(nextState))

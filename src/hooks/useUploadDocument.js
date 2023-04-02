@@ -15,36 +15,20 @@ const useUploadDocument = () => {
   const handleUpload = async () => {
     setLoading(true)
     try {
-      // Show file picker dialog to let user select a file
       const file = await DocumentPicker.pickSingle({
         type: [DocumentPicker.types.xlsx, DocumentPicker.types.csv, DocumentPicker.types.xls],
       });
-
-      // Get the file path from the file object
       const filePath = file.uri;
-
-      // Check if file path starts with "file://"
       const isLocalFile = filePath.startsWith('file://');
-
-      // Read the selected file as base64-encoded data using the RNFS package
       const fileData = await RNFS.readFile(
         isLocalFile ? filePath.slice(7) : filePath,
         'base64',
       );
-
-      // Convert base64-encoded data to binary data using the Buffer API
       const binaryData = Buffer.from(fileData, 'base64').toString('binary');
-
-      // Parse the Excel file data using the XLSX package
       const workbook = XLSX.read(binaryData, { type: 'binary' });
-
-      // Get the sheet names from the workbook
       const sheetNames = workbook.SheetNames;
-
-      // Get the data from the first sheet
       const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]]);
 
-      // Do something with the sheet data
       setData(sheetData)
       setTotal(sheetData?.length)
       setLoading(false)
@@ -57,7 +41,7 @@ const useUploadDocument = () => {
 
   const clearSheetData = () => setData([])
 
-  const handleUpdateData = (id, value) => {
+  const handleUpdateData = (id, value, onDismiss) => {
     setData(prevArray => {
       const newArray = [...prevArray];
       const index = newArray.findIndex(obj => obj.kodebarang === id);
@@ -65,6 +49,12 @@ const useUploadDocument = () => {
       
       return newArray;
     })
+
+    setTimeout(() => {
+      ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT)
+
+      onDismiss()
+    }, 800)
   }
 
   const requestStoragePermission = async () => {

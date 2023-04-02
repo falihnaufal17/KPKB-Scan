@@ -44,7 +44,7 @@ const ModalForm = ({
             </Button>
             <Button
               mode="contained"
-              onPress={() => onSubmit(filteredData?.kodebarang, qty)}
+              onPress={() => onSubmit(filteredData?.kodebarang, qty, onDismiss)}
             >
               Ubah
             </Button>
