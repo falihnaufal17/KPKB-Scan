@@ -1,36 +1,31 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
 const useHandleLoadMore = (initData = []) => {
-  const [data, setData] = useState([])
-  const [loadingMore, setLoadingMore] = useState(false)
+  const [data, setData] = useState([]);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
+  const offset = (page - 1) * limit;
 
   useEffect(() => {
-    setData(initData.slice(0, 10))
-  }, [initData])
+    setData(initData);
+    setPage(1)
+  }, [initData]);
 
   const handleLoadMore = () => {
-    const total = initData.length
-    let limit = 10
+    setLoadingMore(true);
 
-    console.log("LIMIT", limit)
-    if (data.length < total) {
-      setLoadingMore(true)
-      limit += 10
-
-      setTimeout(() => {
-        const newData = initData.slice(limit+1, limit)
-        setData([...data, ...newData])
-
-        setLoadingMore(false)
-      }, 1000)
-    }
-  }
+    setTimeout(() => {
+      setPage((prev) => prev + 1);
+      setLoadingMore(false)
+    }, 1000)
+  };
 
   return {
     data,
     handleLoadMore,
-    loadingMore
-  }
-}
+    loadingMore,
+  };
+};
 
-export default useHandleLoadMore
+export default useHandleLoadMore;

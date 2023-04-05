@@ -31,6 +31,7 @@
     "react-native-svg": "^13.8.0",
     "react-native-vector-icons": "^9.2.0",
     "react-redux": "^8.0.5",
+    "redux-logger": "^3.0.6",
     "uuid": "^9.0.0",
     "xlsx": "^0.18.5"
   },

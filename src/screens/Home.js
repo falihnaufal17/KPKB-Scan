@@ -7,70 +7,65 @@
  */
 
 import React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
-import { FAB, MD3Colors, ActivityIndicator } from 'react-native-paper';
+import { StatusBar, ToastAndroid, View } from 'react-native';
+import { Text } from 'react-native-paper';
 import ListEmpty from '../components/ListEmpty';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
-import ProductItem from '../components/ProductItem';
 import ListHeader from '../components/ListHeader';
 import LoadingPopup from '../components/LoadingPopup';
+import { useSelector } from 'react-redux';
+import Scanner from '../components/Scanner';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-const Home = ({navigation, route}) => {
-  const {
-    loading,
-    sheetData,
-    handleUpload,
-    clearSheetData,
-    handleDownload,
-    loadingDownload,
-    data,
-    handleLoadMore,
-    loadingMore
-  } = route.params
+const Home = ({ navigation, route }) => {
   const contentContainerStyle = {}
+  const {loading, message, data, loadingDownload} = useSelector(state => state.document)
+
+  React.useLayoutEffect(() => {
+    if (message) {
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }, [message]) 
 
   if (data?.length === 0) {
-    Object.assign(contentContainerStyle, {contentContainerStyle: {
-      flex: 1
-    }})
+    Object.assign(contentContainerStyle, {
+      contentContainerStyle: {
+        flex: 1
+      }
+    })
   }
 
   return (
     <>
-    <Header title="KPKB" />
-    <FlatList
-      data={data}
-      keyExtractor={(i, key) => `${i.kode}${key}`}
-      renderItem={({ item }) => <ProductItem KODE_BARANG={item?.kodebarang} NAMA_BARANG={item?.nama} NO_ASLI={item?.barcode} UNIT={item?.unit} KUANTITAS={item?.qty || '-'} />}
-      ListEmptyComponent={loading ? <Loading /> : <ListEmpty onImport={handleUpload} />}
-      {...contentContainerStyle}
-      ListHeaderComponent={data?.length > 0 ? <ListHeader onClear={clearSheetData} onDownload={handleDownload} /> : null}
-      onEndReached={handleLoadMore}
-      onEndReachedThreshold={0.2}
-      ListFooterComponent={loadingMore ? <ActivityIndicator /> : null}
-    />
-    {data.length > 0 ? (
-      <FAB
-        icon="barcode-scan"
-        style={styles.fab}
-        color={MD3Colors.primary100}
-        onPress={() => navigation.push('Barcode', {sheetData})}
-      />
-    ) : null}
-    <LoadingPopup visible={loadingDownload} />
+    <StatusBar translucent={true} backgroundColor={'transparent'} />
+      <Header title="KPKB" />
+      <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        marginHorizontal: 16
+      }}>
+        { loading ? (
+          <Loading />
+        ) : data.length > 0 ? (
+          <>
+            <Text variant="titleLarge" style={{marginBottom: 16, textAlign: 'center'}}>Data berhasil diunggah!</Text>
+            <Text variant="bodyLarge" style={{marginBottom: 16, textAlign: 'center'}}>Terdeteksi <Text style={{fontWeight: '800'}}>{data.length}</Text> data produk</Text>
+            <Text variant="bodyMedium" style={{marginBottom: 16, textAlign: 'center'}}>
+              Silahkan klik ikon <Icon name="barcode-scan" /> untuk melakukan scan barcode pada produk atau lakukan aksi di bawah ini
+            </Text>
+            <ListHeader data={data} />
+          </>
+        ) : (
+          <ListEmpty />
+        )}
+      </View>
+      {data.length > 0 ? (
+        <Scanner navigation={navigation} sheetData={data} />
+      ) : null}
+      <LoadingPopup visible={loadingDownload} />
     </>
   );
 };
 
 export default Home;
-
-const styles = StyleSheet.create({
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
-    backgroundColor: MD3Colors.primary10
-  },
-})

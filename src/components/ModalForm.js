@@ -2,16 +2,18 @@ import React, {useState} from 'react'
 import { View, StyleSheet } from 'react-native';
 import {Modal, Portal, Text, TextInput, Button, MD3Colors } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
+import { useDispatch } from 'react-redux';
+import { updateDocument } from '../reducers/document';
 
 const ModalForm = ({
   visible = false,
   onDismiss,
   data = [],
-  onSubmit,
   barcode
 }) => {
   let filteredData = data.find(item => item.barcode === barcode)
   const [qty, setQty] = useState(filteredData?.qty || 0)
+  const dispatch = useDispatch()
 
   return (
     <Portal>
@@ -44,7 +46,7 @@ const ModalForm = ({
             </Button>
             <Button
               mode="contained"
-              onPress={() => onSubmit(filteredData?.kodebarang, qty, onDismiss)}
+              onPress={() => dispatch(updateDocument({id: filteredData?.kodebarang, value: qty, onDismiss}))}
             >
               Ubah
             </Button>
