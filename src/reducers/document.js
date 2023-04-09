@@ -11,7 +11,8 @@ export const document = createSlice({
     data: [],
     loading: false,
     message: null,
-    loadingDownload: false
+    loadingDownload: false,
+    loadingUpdate: false
   },
   reducers: {
     uploadDocument: (state, action) => {
@@ -28,17 +29,15 @@ export const document = createSlice({
       state.message = action.payload.message
     },
     updateDocument: (state, action) => {
+      state.loadingUpdate = true
       const newArray = [...state.data]
       const index = newArray.findIndex(obj => obj.kodebarang === action.payload.id);
       newArray[index] = { ...newArray[index], qty: action.payload.value };
 
       state.data = newArray
+      ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT)
 
-      setTimeout(() => {
-        ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT)
-
-        action.payload.onDismiss()
-      }, 1000)
+      action.payload.onDismiss()
     }
   },
 })
@@ -71,9 +70,8 @@ export const uploadDocumentAsnyc = () => async (dispatch) => {
 }
 
 export const downloadDocumentAsync = (data) => async (dispatch) => {
-  await requestStoragePermission()
-  
   dispatch(downloadDocument({loading: true}))
+  await requestStoragePermission()
 
   const now = new Date();
   const year = now.getFullYear();

@@ -61,7 +61,7 @@ const Home = ({ navigation, route }) => {
         )}
       </View>
       {data.length > 0 ? (
-        <Scanner navigation={navigation} sheetData={data} />
+        <Scanner navigation={navigation} />
       ) : null}
       <LoadingPopup visible={loadingDownload} />
     </>

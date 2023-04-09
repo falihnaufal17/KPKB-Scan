@@ -2,15 +2,15 @@ import React, {useState} from 'react'
 import { View, StyleSheet } from 'react-native';
 import {Modal, Portal, Text, TextInput, Button, MD3Colors } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateDocument } from '../reducers/document';
 
 const ModalForm = ({
   visible = false,
   onDismiss,
-  data = [],
   barcode
 }) => {
+  const {data} = useSelector(s => s.document)
   let filteredData = data.find(item => item.barcode === barcode)
   const [qty, setQty] = useState(filteredData?.qty || 0)
   const dispatch = useDispatch()
@@ -23,10 +23,11 @@ const ModalForm = ({
         contentContainerStyle={styles.containerStyle}
       >
         <Animatable.View animation="slideInRight" duration={800}>
-          <Text variant="titleLarge">Tambah kuantitas</Text>
-          <Text>{filteredData?.nama}</Text>
+          <Text variant="titleLarge" style={{marginBottom: 24, textAlign: 'center'}}>Tambah kuantitas</Text>
+          <Text variant="bodyLarge" style={{marginBottom: 16}}>{filteredData?.nama}</Text>
           <Text>Kode Barang: {filteredData?.kodebarang}</Text>
-          <Text>Unit: {filteredData?.unit}</Text>
+          <Text>Jumlah: {filteredData?.qty ?? '-'}</Text>
+          <Text style={{marginBottom: 16}}>Unit: {filteredData?.unit}</Text>
           <TextInput
             label="Jumlah"
             mode="outlined"
