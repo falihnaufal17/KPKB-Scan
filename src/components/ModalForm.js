@@ -11,7 +11,7 @@ const ModalForm = ({
   barcode
 }) => {
   const {data} = useSelector(s => s.document)
-  let filteredData = data.find(item => item.barcode === barcode)
+  let filteredData = data.find(item => item.barcode?.toString() === barcode?.toString())
   const [qty, setQty] = useState(filteredData?.qty || 0)
   const dispatch = useDispatch()
 

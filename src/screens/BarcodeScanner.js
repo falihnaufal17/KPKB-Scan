@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, ToastAndroid, StatusBar } from 'react-native';
+import { Text, View, StyleSheet, ToastAndroid } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import ModalForm from '../components/ModalForm';
 
-const BarcodeScanner = ({route}) => {
+const BarcodeScanner = () => {
   const [qrData, setQrData] = useState('');
   const [visible, setVisible] = useState(false)
-  const {handleUpdateData, sheetData} = route.params
 
   const handleBarCodeScanned = (data) => {
     if (data.data) {
@@ -41,11 +40,9 @@ const BarcodeScanner = ({route}) => {
         <Text style={styles.instructions}>Scan a barcode</Text>
       )}
       <ModalForm
-        data={sheetData}
         visible={visible}
         barcode={qrData}
         onDismiss={onDismiss}
-        onSubmit={handleUpdateData}
       />
     </View>
   );
