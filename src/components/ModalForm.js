@@ -11,7 +11,9 @@ const ModalForm = ({
   barcode
 }) => {
   const {data} = useSelector(s => s.document)
-  let filteredData = data.find(item => item.barcode?.toString() === barcode?.toString())
+  let filteredData = data.find(item => {
+    return item.barcode?.toString() === barcode?.toString()
+  })
   const [qty, setQty] = useState(filteredData?.qty || 0)
   const dispatch = useDispatch()
 
@@ -25,6 +27,7 @@ const ModalForm = ({
         <Animatable.View animation="slideInRight" duration={800}>
           <Text variant="titleLarge" style={{marginBottom: 24, textAlign: 'center'}}>Tambah kuantitas</Text>
           <Text variant="bodyLarge" style={{marginBottom: 16}}>{filteredData?.nama}</Text>
+          <Text>Barcode Terdeteksi: {barcode}</Text>
           <Text>Kode Barang: {filteredData?.kodebarang}</Text>
           <Text>Jumlah: {filteredData?.qty ?? '-'}</Text>
           <Text style={{marginBottom: 16}}>Unit: {filteredData?.unit}</Text>

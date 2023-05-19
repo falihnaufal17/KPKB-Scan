@@ -9,7 +9,9 @@ const BarcodeScanner = () => {
 
   const handleBarCodeScanned = (data) => {
     if (data.data) {
-      setQrData(data.data)
+      if (data.data.toString().charAt(0) === '0') {
+        setQrData(data.data.substring(1))
+      } 
       setVisible(true)
     } else {
       ToastAndroid.show('Barcode not found', ToastAndroid.SHORT)
