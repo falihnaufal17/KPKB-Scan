@@ -8,10 +8,15 @@ const BarcodeScanner = () => {
   const [visible, setVisible] = useState(false)
 
   const handleBarCodeScanned = (data) => {
+    let resQR = ''
+
     if (data.data) {
+      resQR = data.data
       if (data.data.toString().charAt(0) === '0') {
-        setQrData(data.data.substring(1))
-      } 
+        resQR = data.data.substring(1)
+        setQrData(resQR)
+      }
+      setQrData(resQR)
       setVisible(true)
     } else {
       ToastAndroid.show('Barcode not found', ToastAndroid.SHORT)
