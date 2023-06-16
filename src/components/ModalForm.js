@@ -1,9 +1,10 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { View, StyleSheet } from 'react-native';
 import {Modal, Portal, Text, TextInput, Button, MD3Colors } from 'react-native-paper'
 import * as Animatable from 'react-native-animatable';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateDocument } from '../reducers/document';
+import { updateDocumentAsync } from '../reducers/document';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ModalForm = ({
   visible = false,
@@ -11,11 +12,27 @@ const ModalForm = ({
   barcode
 }) => {
   const {data} = useSelector(s => s.document)
-  let filteredData = data.find(item => {
-    return item.barcode?.toString() === barcode?.toString()
-  })
   const [qty, setQty] = useState(filteredData?.qty || 0)
+  const [filteredData, setFilteredData] = useState(null)
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (barcode) {
+      const filterData = data.find(item => {
+        return item.barcode?.toString() === barcode?.toString()
+      })
+
+      if (filterData) {
+        saveToLocal(filterData)
+      }
+
+      setFilteredData(filterData)
+    }
+  }, [barcode])
+
+  const saveToLocal = async (filterData) => {
+    await AsyncStorage.setItem('@filteredData', JSON.stringify(filterData))
+  }
 
   return (
     <Portal>
@@ -26,7 +43,7 @@ const ModalForm = ({
       >
         <Animatable.View animation="slideInRight" duration={800}>
           <Text variant="titleLarge" style={{marginBottom: 24, textAlign: 'center'}}>Tambah kuantitas</Text>
-          <Text variant="bodyLarge" style={{marginBottom: 16}}>{filteredData?.nama}</Text>
+          <Text variant="titleMedium" style={{marginBottom: 16}}>{filteredData?.nama}</Text>
           <Text>Barcode Terdeteksi: {barcode}</Text>
           <Text>Kode Barang: {filteredData?.kodebarang}</Text>
           <Text>Jumlah: {filteredData?.qty ?? '-'}</Text>
@@ -50,7 +67,7 @@ const ModalForm = ({
             </Button>
             <Button
               mode="contained"
-              onPress={() => dispatch(updateDocument({id: filteredData?.kodebarang, value: qty, onDismiss}))}
+              onPress={() => dispatch(updateDocumentAsync({id: filteredData?.kodebarang, value: qty, onDismiss}))}
             >
               Ubah
             </Button>

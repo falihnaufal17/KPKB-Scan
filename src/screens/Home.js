@@ -17,6 +17,7 @@ import LoadingPopup from '../components/LoadingPopup';
 import { useSelector } from 'react-redux';
 import Scanner from '../components/Scanner';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = ({ navigation, route }) => {
   const contentContainerStyle = {}
@@ -26,14 +27,25 @@ const Home = ({ navigation, route }) => {
     if (message) {
       ToastAndroid.show(message, ToastAndroid.SHORT)
     }
-  }, [message]) 
+  }, [message])
 
-  if (data?.length === 0) {
-    Object.assign(contentContainerStyle, {
-      contentContainerStyle: {
-        flex: 1
-      }
-    })
+  React.useEffect(() => {
+    if (data?.length === 0) {
+      Object.assign(contentContainerStyle, {
+        contentContainerStyle: {
+          flex: 1
+        }
+      })
+    }
+    fetchFromLocal()
+  }, [data])
+
+  const fetchFromLocal = async () => {
+    const scannedData = JSON.parse(await AsyncStorage.getItem('@filteredData')) || null
+
+    if (scannedData) {
+      navigation.navigate('Barcode', {scannedData})
+    }
   }
 
   return (

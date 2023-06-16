@@ -4,6 +4,7 @@ import XLSX from 'xlsx';
 import { Buffer } from 'buffer';
 import RNFS from 'react-native-fs';
 import { PermissionsAndroid, ToastAndroid } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const document = createSlice({
   name: 'document',
@@ -63,6 +64,8 @@ export const uploadDocumentAsnyc = () => async (dispatch) => {
     const sheetNames = workbook.SheetNames;
     const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetNames[0]]);
 
+    await AsyncStorage.setItem('@excelData', JSON.stringify(sheetData))
+
     dispatch(uploadDocument({loading: false, data: sheetData, message: 'Dokumen berhasil diunggah'}))
   } catch (e) {
     dispatch(uploadDocument({loading: false, data: [], message: `Error reading file: ${e}`}))
@@ -92,6 +95,16 @@ export const downloadDocumentAsync = (data) => async (dispatch) => {
     dispatch(downloadDocument({loading: false, message: `Terjadi kesalahan ${e}`}))
     console.error(e)
   }
+}
+
+export const setDataExcel = (data) => (dispatch) => {
+  dispatch(uploadDocument({loading: false, data, message: 'Dokumen berhasil muat'}))
+}
+
+export const updateDocumentAsync = (payload) => async (dispatch) => {
+  dispatch(updateDocument(payload))
+
+  await AsyncStorage.removeItem('@filteredData')
 }
 
 const convertJsonToWorkbook = (json) => {
