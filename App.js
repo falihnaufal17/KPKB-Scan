@@ -1,8 +1,9 @@
-import { Provider as PaperProvider } from 'react-native-paper';
+import React from 'react';
+import {Provider as PaperProvider} from 'react-native-paper';
 import Screen from './src/screens';
-import { Provider } from 'react-redux';
+import {Provider} from 'react-redux';
 import store from './src/store';
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 
 const App = () => {
   return (
@@ -13,7 +14,7 @@ const App = () => {
         </NavigationContainer>
       </PaperProvider>
     </Provider>
-  )
-}
+  );
+};
 
-export default App
+export default App;

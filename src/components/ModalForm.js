@@ -1,49 +1,57 @@
-import React, {useEffect, useState} from 'react'
-import { View, StyleSheet } from 'react-native';
-import {Modal, Portal, Text, TextInput, Button, MD3Colors } from 'react-native-paper'
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet} from 'react-native';
+import {
+  Modal,
+  Portal,
+  Text,
+  TextInput,
+  Button,
+  MD3Colors,
+} from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateDocumentAsync } from '../reducers/document';
+import {useDispatch, useSelector} from 'react-redux';
+import {updateDocumentAsync} from '../reducers/document';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ModalForm = ({
-  visible = false,
-  onDismiss,
-  barcode
-}) => {
-  const {data} = useSelector(s => s.document)
-  const [qty, setQty] = useState(filteredData?.qty || 0)
-  const [filteredData, setFilteredData] = useState(null)
-  const dispatch = useDispatch()
+const ModalForm = ({visible = false, onDismiss, barcode}) => {
+  const {data} = useSelector(s => s.document);
+  const [qty, setQty] = useState(filteredData?.qty || 0);
+  const [filteredData, setFilteredData] = useState(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (barcode) {
       const filterData = data.find(item => {
-        return item.barcode?.toString() === barcode?.toString()
-      })
+        return item.barcode?.toString() === barcode?.toString();
+      });
 
       if (filterData) {
-        saveToLocal(filterData)
+        saveToLocal(filterData);
       }
 
-      setFilteredData(filterData)
+      setFilteredData(filterData);
     }
-  }, [barcode])
+  }, [barcode, data]);
 
-  const saveToLocal = async (filterData) => {
-    await AsyncStorage.setItem('@filteredData', JSON.stringify(filterData))
-  }
+  const saveToLocal = async filterData => {
+    await AsyncStorage.setItem('@filteredData', JSON.stringify(filterData));
+  };
 
   return (
     <Portal>
       <Modal
         visible={visible}
         onDismiss={onDismiss}
-        contentContainerStyle={styles.containerStyle}
-      >
+        contentContainerStyle={styles.containerStyle}>
         <Animatable.View animation="slideInRight" duration={800}>
-          <Text variant="titleLarge" style={{marginBottom: 24, textAlign: 'center'}}>Tambah kuantitas</Text>
-          <Text variant="titleMedium" style={{marginBottom: 16}}>{filteredData?.nama}</Text>
+          <Text
+            variant="titleLarge"
+            style={{marginBottom: 24, textAlign: 'center'}}>
+            Tambah kuantitas
+          </Text>
+          <Text variant="titleMedium" style={{marginBottom: 16}}>
+            {filteredData?.nama}
+          </Text>
           <Text>Barcode Terdeteksi: {barcode}</Text>
           <Text>Kode Barang: {filteredData?.kodebarang}</Text>
           <Text>Jumlah: {filteredData?.qty ?? '-'}</Text>
@@ -61,39 +69,45 @@ const ModalForm = ({
               mode="contained"
               buttonColor={MD3Colors.error50}
               style={styles.btnCancel}
-              onPress={onDismiss}
-            >
+              onPress={onDismiss}>
               Batal
             </Button>
             <Button
               mode="contained"
-              onPress={() => dispatch(updateDocumentAsync({id: filteredData?.kodebarang, value: qty, onDismiss}))}
-            >
+              onPress={() =>
+                dispatch(
+                  updateDocumentAsync({
+                    id: filteredData?.kodebarang,
+                    value: qty,
+                    onDismiss,
+                  }),
+                )
+              }>
               Ubah
             </Button>
           </View>
         </Animatable.View>
       </Modal>
     </Portal>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   containerStyle: {
     backgroundColor: '#FFF',
     padding: 20,
-    flex: 1
+    flex: 1,
   },
   buttonWrapper: {
     flexDirection: 'row',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   qty: {
-    marginBottom: 16
+    marginBottom: 16,
   },
   btnCancel: {
-    marginRight: 16
-  }
-})
+    marginRight: 16,
+  },
+});
 
-export default ModalForm
+export default ModalForm;

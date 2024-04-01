@@ -1,22 +1,25 @@
-import React, { memo } from 'react'
-import { View } from 'react-native'
-import { Button, MD3Colors } from 'react-native-paper'
-import { useDispatch } from 'react-redux'
-import { clearDocument, downloadDocumentAsync } from '../reducers/document'
+import React, {memo} from 'react';
+import {View} from 'react-native';
+import {Button, MD3Colors} from 'react-native-paper';
+import {useDispatch} from 'react-redux';
+import {clearDocument, downloadDocumentAsync} from '../reducers/document';
 
 const ListHeader = ({data}) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   return (
-    <View style={{
-      flexDirection: 'row',
-      justifyContent: 'space-evenly'
-    }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+      }}>
       <Button
         buttonColor={MD3Colors.error50}
         icon="trash-can-outline"
         mode="contained"
-        onPress={() => dispatch(clearDocument({message: 'Dokumen dibersihkan'}))}>
+        onPress={() =>
+          dispatch(clearDocument({message: 'Dokumen dibersihkan'}))
+        }>
         Bersihkan
       </Button>
       <Button
@@ -27,7 +30,11 @@ const ListHeader = ({data}) => {
         Unduh
       </Button>
     </View>
-  )
-}
+  );
+};
 
-export default memo(ListHeader, (prevState, nextState) => JSON.stringify(prevState) === JSON.stringify(nextState))
+export default memo(
+  ListHeader,
+  (prevState, nextState) =>
+    JSON.stringify(prevState) === JSON.stringify(nextState),
+);
