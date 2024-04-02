@@ -15,6 +15,7 @@ const ListHeader = ({data}) => {
       }}>
       <Button
         buttonColor={MD3Colors.error50}
+        labelStyle={{fontSize: 16}}
         icon="trash-can-outline"
         mode="contained"
         onPress={() =>
@@ -24,6 +25,7 @@ const ListHeader = ({data}) => {
       </Button>
       <Button
         buttonColor={MD3Colors.tertiary50}
+        labelStyle={{fontSize: 16}}
         icon="download"
         mode="contained"
         onPress={() => dispatch(downloadDocumentAsync(data))}>

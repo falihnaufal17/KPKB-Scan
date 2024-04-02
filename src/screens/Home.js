@@ -8,7 +8,7 @@
 
 import React from 'react';
 import {StatusBar, ToastAndroid, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {MD3Colors, Text} from 'react-native-paper';
 import ListEmpty from '../components/ListEmpty';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
@@ -45,7 +45,7 @@ const Home = ({navigation, route}) => {
 
   return (
     <>
-      <StatusBar translucent={true} backgroundColor={'transparent'} />
+      <StatusBar backgroundColor={MD3Colors.primary40} />
       <Header title="KPKB" />
       <View
         style={{
@@ -69,10 +69,10 @@ const Home = ({navigation, route}) => {
               data produk
             </Text>
             <Text
-              variant="bodyMedium"
+              variant="bodyLarge"
               style={{marginBottom: 16, textAlign: 'center'}}>
-              Silakan klik ikon <Icon name="barcode-scan" /> untuk melakukan
-              scan barcode pada produk atau lakukan aksi di bawah ini
+              Silakan klik ikon <Icon name="barcode-scan" size={20} /> untuk
+              melakukan scan barcode pada produk atau lakukan aksi di bawah ini
             </Text>
             <ListHeader data={data} />
           </>

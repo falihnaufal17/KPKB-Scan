@@ -38,7 +38,9 @@ export const document = createSlice({
       newArray[index] = {...newArray[index], qty: action.payload.value};
 
       state.data = newArray;
-      ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT);
+      ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT);      
+
+      AsyncStorage.setItem('@excelData', JSON.stringify(newArray));
 
       action.payload.onDismiss();
     },

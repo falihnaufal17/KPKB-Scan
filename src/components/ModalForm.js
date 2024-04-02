@@ -46,16 +46,32 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
         <Animatable.View animation="slideInRight" duration={800}>
           <Text
             variant="titleLarge"
-            style={{marginBottom: 24, textAlign: 'center'}}>
+            style={{marginBottom: 8, textAlign: 'center'}}>
             Tambah kuantitas
           </Text>
-          <Text variant="titleMedium" style={{marginBottom: 16}}>
+          <Text variant="titleLarge" selectable style={{marginBottom: 24, textAlign: 'center'}}>
             {filteredData?.nama}
           </Text>
-          <Text>Barcode Terdeteksi: {barcode}</Text>
-          <Text>Kode Barang: {filteredData?.kodebarang}</Text>
-          <Text>Jumlah: {filteredData?.qty ?? '-'}</Text>
-          <Text style={{marginBottom: 16}}>Unit: {filteredData?.unit}</Text>
+          <View style={styles.row}>
+            <Text variant="bodyMedium">Barcode Terdeteksi</Text>
+            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{barcode}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text variant="bodyMedium">Kode Barang</Text>
+            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{filteredData?.kodebarang}</Text>
+          </View>
+            <View style={styles.row}>
+            <Text variant="bodyMedium">Jumlah</Text>
+            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{filteredData?.qty ?? '-'}</Text>
+            </View>
+          <View style={styles.row}>
+            <Text variant="bodyMedium">Jumlah Pada Sistem</Text>
+            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{filteredData?.qtysystem ?? '-'}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text variant="bodyMedium" style={{marginBottom: 16}}>Unit</Text>
+            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>{filteredData?.unit}</Text>
+          </View>
           <TextInput
             label="Jumlah"
             mode="outlined"
@@ -64,28 +80,29 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
             style={styles.qty}
             onChangeText={v => setQty(v)}
           />
-          <View style={styles.buttonWrapper}>
-            <Button
-              mode="contained"
-              buttonColor={MD3Colors.error50}
-              style={styles.btnCancel}
-              onPress={onDismiss}>
-              Batal
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() =>
-                dispatch(
-                  updateDocumentAsync({
-                    id: filteredData?.kodebarang,
-                    value: qty,
-                    onDismiss,
-                  }),
-                )
-              }>
-              Ubah
-            </Button>
-          </View>
+          <Button
+            mode="contained"
+            style={{marginBottom: 16, paddingVertical: 4}}
+            labelStyle={{ fontSize: 16 }}
+            onPress={() =>
+              dispatch(
+                updateDocumentAsync({
+                  id: filteredData?.kodebarang,
+                  value: qty,
+                  onDismiss,
+                }),
+              )
+            }>
+            Ubah
+          </Button>
+          <Button
+            mode="contained"
+            style={{marginBottom: 16, paddingVertical: 4}}
+            labelStyle={{ fontSize: 16 }}
+            buttonColor={MD3Colors.error50}
+            onPress={onDismiss}>
+            Batal
+          </Button>
         </Animatable.View>
       </Modal>
     </Portal>
@@ -105,8 +122,10 @@ const styles = StyleSheet.create({
   qty: {
     marginBottom: 16,
   },
-  btnCancel: {
-    marginRight: 16,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6
   },
 });
 

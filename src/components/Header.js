@@ -33,7 +33,14 @@ const Header = ({title}) => {
               onPress={openMenu}
               backgroundColor="transparent"
               style={{marginRight: 16}}>
-              <Text style={{color: '#FFF'}}>{name}</Text>
+              <Text
+                style={{
+                  color: '#FFF',
+                  fontSize: 16,
+                  textTransform: 'uppercase',
+                }}>
+                {name}
+              </Text>
             </TouchableRipple>
           }>
           <Menu.Item onPress={() => dispatch(signOutAsync())} title="Keluar" />
