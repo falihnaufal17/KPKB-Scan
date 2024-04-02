@@ -17,7 +17,6 @@ import {
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
-import {useNavigation} from '@react-navigation/native';
 
 const BarcodeScanner = ({route}) => {
   const [qrData, setQrData] = useState('');
