@@ -24,7 +24,6 @@ const BarcodeScanner = ({route}) => {
   const [visible, setVisible] = useState(false);
   const {hasPermission, requestPermission} = useCameraPermission();
   const device = useCameraDevice('back');
-  const navigation = useNavigation();
 
   const handleBarCodeScanned = codes => {
     let resQR = '';
