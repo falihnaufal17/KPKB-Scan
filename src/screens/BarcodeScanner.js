@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -17,14 +17,14 @@ import {
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
-const BarcodeScanner = ({ route }) => {
+const BarcodeScanner = ({route}) => {
   const [qrData, setQrData] = useState('');
   const [visible, setVisible] = useState(false);
   const {hasPermission, requestPermission} = useCameraPermission();
   const device = useCameraDevice('back');
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const handleBarCodeScanned = codes => {
     let resQR = '';
@@ -37,7 +37,7 @@ const BarcodeScanner = ({ route }) => {
       }
 
       setQrData(resQR);
-      setVisible(true)
+      setVisible(true);
     } else {
       ToastAndroid.show('Barcode not found', ToastAndroid.SHORT);
     }
@@ -88,19 +88,19 @@ const BarcodeScanner = ({ route }) => {
         </View>
       )}
       <View style={styles.formGroup}>
-        <Text variant="bodyMedium" style={{ marginBottom: 8 }}>
+        <Text variant="bodyMedium" style={{marginBottom: 8}}>
           Barcode sulit terdeteksi? masukan kode ke sini
         </Text>
         <TextInput
           style={styles.formControl}
           keyboardType="number-pad"
           onChangeText={v => handleInputCode(v)}
-          onSubmitEditing={() => handleBarCodeScanned({ type: '', data: qrData })}
+          onSubmitEditing={() => handleBarCodeScanned({type: '', data: qrData})}
           value={qrData}
           placeholder="Masukan kode"
         />
         <TouchableOpacity
-          style={[styles.btnSubmit, !qrData ? styles.btnSubmitDisabled : {} ]}
+          style={[styles.btnSubmit, !qrData ? styles.btnSubmitDisabled : {}]}
           activeOpacity={0.8}
           disabled={!qrData}
           onPress={() => handleBarCodeScanned({type: '', data: qrData})}>
@@ -144,21 +144,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   btnSubmitDisabled: {
-    backgroundColor: MD3Colors.secondary70
+    backgroundColor: MD3Colors.secondary70,
   },
   txtSubmit: {
     textAlign: 'center',
-    color: MD3Colors.primary100
+    color: MD3Colors.primary100,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   errorText: {
     color: MD3Colors.error40,
     fontSize: 16,
-    letterSpacing: 0.8
+    letterSpacing: 0.8,
   },
   formGroup: {
     backgroundColor: '#FFF',
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 16,
     paddingHorizontal: 16,
-  }
+  },
 });
 
 export default BarcodeScanner;

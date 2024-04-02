@@ -49,28 +49,43 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
             style={{marginBottom: 8, textAlign: 'center'}}>
             Tambah kuantitas
           </Text>
-          <Text variant="titleLarge" selectable style={{marginBottom: 24, textAlign: 'center'}}>
+          <Text
+            variant="titleLarge"
+            selectable
+            style={{marginBottom: 24, textAlign: 'center'}}>
             {filteredData?.nama}
           </Text>
           <View style={styles.row}>
             <Text variant="bodyMedium">Barcode Terdeteksi</Text>
-            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{barcode}</Text>
+            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+              {barcode}
+            </Text>
           </View>
           <View style={styles.row}>
             <Text variant="bodyMedium">Kode Barang</Text>
-            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{filteredData?.kodebarang}</Text>
+            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+              {filteredData?.kodebarang}
+            </Text>
           </View>
-            <View style={styles.row}>
+          <View style={styles.row}>
             <Text variant="bodyMedium">Jumlah</Text>
-            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{filteredData?.qty ?? '-'}</Text>
-            </View>
+            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+              {filteredData?.qty ?? '-'}
+            </Text>
+          </View>
           <View style={styles.row}>
             <Text variant="bodyMedium">Jumlah Pada Sistem</Text>
-            <Text variant="bodyMedium" selectable style={{ fontWeight: '700' }}>{filteredData?.qtysystem ?? '-'}</Text>
+            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+              {filteredData?.qtysystem ?? '-'}
+            </Text>
           </View>
           <View style={styles.row}>
-            <Text variant="bodyMedium" style={{marginBottom: 16}}>Unit</Text>
-            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>{filteredData?.unit}</Text>
+            <Text variant="bodyMedium" style={{marginBottom: 16}}>
+              Unit
+            </Text>
+            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+              {filteredData?.unit}
+            </Text>
           </View>
           <TextInput
             label="Jumlah"
@@ -83,7 +98,7 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
           <Button
             mode="contained"
             style={{marginBottom: 16, paddingVertical: 4}}
-            labelStyle={{ fontSize: 16 }}
+            labelStyle={{fontSize: 16}}
             onPress={() =>
               dispatch(
                 updateDocumentAsync({
@@ -98,7 +113,7 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
           <Button
             mode="contained"
             style={{marginBottom: 16, paddingVertical: 4}}
-            labelStyle={{ fontSize: 16 }}
+            labelStyle={{fontSize: 16}}
             buttonColor={MD3Colors.error50}
             onPress={onDismiss}>
             Batal
@@ -125,7 +140,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6
+    marginBottom: 6,
   },
 });
 

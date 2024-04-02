@@ -58,5 +58,8 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js}": "npm run lint:fix"
   }
 }
