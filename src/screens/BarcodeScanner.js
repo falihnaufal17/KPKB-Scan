@@ -1,15 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {
-  View,
+  Dimensions,
   StyleSheet,
   ToastAndroid,
-  TextInput,
+  View,
   SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
 } from 'react-native';
 import ModalForm from '../components/ModalForm';
-import {MD3Colors, Text} from 'react-native-paper';
+import {
+  MD3Colors,
+  Text,
+  withTheme,
+  TextInput,
+  TouchableRipple,
+} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Camera,
@@ -27,7 +31,7 @@ const BarcodeScanner = ({route}) => {
   const handleBarCodeScanned = codes => {
     let resQR = '';
     const [data] = codes;
-
+    console.log(codes);
     if (data?.value) {
       resQR = data?.value;
       if (resQR.toString().charAt(0) === '0') {
@@ -73,7 +77,7 @@ const BarcodeScanner = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {device ? (
+      {device && !visible ? (
         <Camera
           style={styles.preview}
           device={device}
@@ -96,14 +100,15 @@ const BarcodeScanner = ({route}) => {
           onSubmitEditing={() => handleBarCodeScanned({type: '', data: qrData})}
           value={qrData}
           placeholder="Masukan kode"
+          mode="outlined"
         />
-        <TouchableOpacity
+        <TouchableRipple
           style={[styles.btnSubmit, !qrData ? styles.btnSubmitDisabled : {}]}
           activeOpacity={0.8}
           disabled={!qrData}
-          onPress={() => handleBarCodeScanned({type: '', data: qrData})}>
+          onPress={() => handleBarCodeScanned([{type: '', value: qrData}])}>
           <Text style={styles.txtSubmit}>Submit</Text>
-        </TouchableOpacity>
+        </TouchableRipple>
       </View>
       <ModalForm
         visible={visible}
@@ -168,8 +173,7 @@ const styles = StyleSheet.create({
     borderColor: '#CCC',
     borderRadius: 10,
     marginBottom: 16,
-    paddingHorizontal: 16,
   },
 });
 
-export default BarcodeScanner;
+export default withTheme(BarcodeScanner);

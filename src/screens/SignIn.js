@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import {Text, TextInput, Button, useTheme} from 'react-native-paper';
+import {Text, TextInput, Button, useTheme, withTheme} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {signInAsync, updateName} from '../reducers/auth';
 
@@ -42,7 +42,7 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default withTheme(SignIn);
 
 const styles = StyleSheet.create({
   container: {
