@@ -42,7 +42,7 @@ const Home = ({navigation, route}) => {
 
     fetchFromLocal();
   }, [data, navigation]);
-  console.log('LENGTH DATA', data.length);
+
   return (
     <>
       <StatusBar backgroundColor={MD3Colors.primary40} />

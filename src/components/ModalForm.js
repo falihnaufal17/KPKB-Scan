@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {
   Modal,
@@ -7,7 +7,6 @@ import {
   TextInput,
   Button,
   MD3Colors,
-  ActivityIndicator,
 } from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import {useDispatch, useSelector} from 'react-redux';
@@ -22,11 +21,21 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
+  // Memoize the creation of a Map for fast lookups
+  const dataMap = useMemo(() => {
+    const map = new Map();
+    data.forEach(item => {
+      if (item.barcode) {
+        map.set(item.barcode.toString(), item);
+      }
+    });
+    return map;
+  }, [data]);
+
   useEffect(() => {
-    if (barcode) {
-      const filterData = data.find(item => {
-        return item.barcode?.toString() === barcode?.toString();
-      });
+    if (visible && barcode) {
+      // Use the Map for fast lookup
+      const filterData = dataMap.get(barcode.toString());
 
       if (filterData) {
         saveToLocal(filterData);
@@ -34,7 +43,7 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
 
       setFilteredData(filterData);
     }
-  }, [barcode, data]);
+  }, [barcode, dataMap, visible]);
 
   const saveToLocal = async filterData => {
     await AsyncStorage.setItem('@filteredData', JSON.stringify(filterData));
@@ -120,17 +129,23 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
             style={{marginBottom: 16, paddingVertical: 4}}
             labelStyle={{fontSize: 16}}
             loading={loading}
+            disabled={loading}
             onPress={async () => {
+              setLoading(true);
+
               const newArray = [...data];
               const index = newArray.findIndex(
                 obj => obj.kodebarang === filteredData?.kodebarang,
               );
 
-              newArray[index] = {
-                ...newArray[index],
-                qtyopname: qty,
-                selisih,
-              };
+              if (index !== -1) {
+                newArray[index] = {
+                  ...newArray[index],
+                  qtyopname: qty,
+                  selisih,
+                };
+              }
+
               const payload = newArray;
 
               await dispatch(updateDocumentAsync({data: payload}));
@@ -141,6 +156,7 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
                   message: 'Dokumen berhasil diperbarui',
                 }),
               );
+              setLoading(false);
               onDismiss();
             }}>
             Ubah

@@ -30,10 +30,9 @@ const BarcodeScanner = ({route}) => {
 
   const handleBarCodeScanned = codes => {
     let resQR = '';
-    const [data] = codes;
 
-    if (data?.value) {
-      resQR = data?.value;
+    if (codes?.[0]?.value) {
+      resQR = codes?.[0]?.value;
       if (resQR.toString().charAt(0) === '0') {
         resQR = resQR.substring(1);
       }
@@ -83,6 +82,7 @@ const BarcodeScanner = ({route}) => {
           device={device}
           isActive={true}
           codeScanner={codeScanner}
+          onStopped={qrData && visible}
         />
       ) : (
         <View style={styles.errorContainer}>
