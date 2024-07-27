@@ -4,7 +4,7 @@ import {View, StyleSheet} from 'react-native';
 import {Text, useTheme} from 'react-native-paper';
 import {Button} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
-import {uploadDocumentAsnyc} from '../reducers/document';
+import {uploadDocumentAsync} from '../reducers/document';
 
 const ListEmpty = () => {
   const theme = useTheme();
@@ -32,7 +32,7 @@ const ListEmpty = () => {
         buttonColor={theme.colors.onPrimaryContainer}
         icon="upload"
         mode="contained"
-        onPress={() => dispatch(uploadDocumentAsnyc())}
+        onPress={() => dispatch(uploadDocumentAsync())}
         style={{marginTop: 16}}>
         Unggah File
       </Button>

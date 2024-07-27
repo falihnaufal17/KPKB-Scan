@@ -7,16 +7,19 @@ import {
   TextInput,
   Button,
   MD3Colors,
+  ActivityIndicator,
 } from 'react-native-paper';
 import * as Animatable from 'react-native-animatable';
 import {useDispatch, useSelector} from 'react-redux';
-import {updateDocumentAsync} from '../reducers/document';
+import {updateDocumentAsync, uploadDocument} from '../reducers/document';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ModalForm = ({visible = false, onDismiss, barcode}) => {
   const {data} = useSelector(s => s.document);
-  const [qty, setQty] = useState(filteredData?.qty || 0);
+  const [qty, setQty] = useState(0);
   const [filteredData, setFilteredData] = useState(null);
+  const [selisih, setSelisih] = useState(0);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -36,6 +39,14 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
   const saveToLocal = async filterData => {
     await AsyncStorage.setItem('@filteredData', JSON.stringify(filterData));
   };
+
+  useEffect(() => {
+    setQty(filteredData?.qtyopname || filteredData?.qty);
+  }, [filteredData?.qtyopname, filteredData?.qty]);
+
+  useEffect(() => {
+    setSelisih(filteredData?.selisih);
+  }, [filteredData?.selisih]);
 
   return (
     <Portal>
@@ -70,13 +81,19 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
           <View style={styles.row}>
             <Text variant="bodyMedium">Jumlah</Text>
             <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
-              {filteredData?.qty ?? '-'}
+              {qty ?? '-'}
             </Text>
           </View>
           <View style={styles.row}>
             <Text variant="bodyMedium">Jumlah Pada Sistem</Text>
             <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
               {filteredData?.qtysystem ?? '-'}
+            </Text>
+          </View>
+          <View style={styles.row}>
+            <Text variant="bodyMedium">Selisih</Text>
+            <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+              {selisih ?? '-'}
             </Text>
           </View>
           <View style={styles.row}>
@@ -93,21 +110,39 @@ const ModalForm = ({visible = false, onDismiss, barcode}) => {
             placeholder="Masukan jumlah"
             keyboardType="number-pad"
             style={styles.qty}
-            onChangeText={v => setQty(v)}
+            onChangeText={v => {
+              setQty(v);
+              setSelisih(v - filteredData?.qtysystem);
+            }}
           />
           <Button
             mode="contained"
             style={{marginBottom: 16, paddingVertical: 4}}
             labelStyle={{fontSize: 16}}
-            onPress={() =>
-              dispatch(
-                updateDocumentAsync({
-                  id: filteredData?.kodebarang,
-                  value: qty,
-                  onDismiss,
+            loading={loading}
+            onPress={async () => {
+              const newArray = [...data];
+              const index = newArray.findIndex(
+                obj => obj.kodebarang === filteredData?.kodebarang,
+              );
+
+              newArray[index] = {
+                ...newArray[index],
+                qtyopname: qty,
+                selisih,
+              };
+              const payload = newArray;
+
+              await dispatch(updateDocumentAsync({data: payload}));
+              await dispatch(
+                uploadDocument({
+                  loading: false,
+                  data: payload,
+                  message: 'Dokumen berhasil diperbarui',
                 }),
-              )
-            }>
+              );
+              onDismiss();
+            }}>
             Ubah
           </Button>
           <Button

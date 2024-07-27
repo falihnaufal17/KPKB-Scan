@@ -9,7 +9,8 @@
     "start": "react-native start",
     "test": "jest",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "prettier": "npx prettier src --write"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.12",
@@ -60,6 +61,9 @@
     "preset": "react-native"
   },
   "lint-staged": {
-    "*.{ts,tsx,js}": "npm run lint:fix"
+    "*.{ts,tsx,js}": [
+      "npm run lint:fix",
+      "npm run prettier"
+    ]
   }
 }

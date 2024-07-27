@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSlice} from '@reduxjs/toolkit';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
+import {clearDocumentAsync} from './document';
 
 export const auth = createSlice({
   name: 'auth',
@@ -49,6 +50,7 @@ export const signOutAsync = () => async dispatch => {
   await AsyncStorage.clear();
 
   dispatch(signOut());
+  dispatch(clearDocumentAsync({message: 'data berhasil dibersihkan'}));
 };
 
 export default auth.reducer;

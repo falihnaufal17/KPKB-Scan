@@ -1,8 +1,8 @@
-import React, {memo} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import {Button, MD3Colors} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
-import {clearDocument, downloadDocumentAsync} from '../reducers/document';
+import {clearDocumentAsync, downloadDocumentAsync} from '../reducers/document';
 
 const ListHeader = ({data}) => {
   const dispatch = useDispatch();
@@ -19,7 +19,7 @@ const ListHeader = ({data}) => {
         icon="trash-can-outline"
         mode="contained"
         onPress={() =>
-          dispatch(clearDocument({message: 'Dokumen dibersihkan'}))
+          dispatch(clearDocumentAsync({message: 'Dokumen dibersihkan'}))
         }>
         Bersihkan
       </Button>
@@ -35,8 +35,4 @@ const ListHeader = ({data}) => {
   );
 };
 
-export default memo(
-  ListHeader,
-  (prevState, nextState) =>
-    JSON.stringify(prevState) === JSON.stringify(nextState),
-);
+export default ListHeader;

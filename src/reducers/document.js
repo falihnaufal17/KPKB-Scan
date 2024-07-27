@@ -35,23 +35,27 @@ export const document = createSlice({
       const index = newArray.findIndex(
         obj => obj.kodebarang === action.payload.id,
       );
-      newArray[index] = {...newArray[index], qty: action.payload.value};
+      newArray[index] = {...newArray[index], qtyopname: action.payload.value};
 
       state.data = newArray;
-      ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT);
-
-      AsyncStorage.setItem('@excelData', JSON.stringify(newArray));
-
-      action.payload.onDismiss();
+    },
+    updateDocumentSuccess: state => {
+      state.loadingUpdate = false;
+      state.message = 'Data berhasil diubah';
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const {uploadDocument, downloadDocument, clearDocument, updateDocument} =
-  document.actions;
+export const {
+  uploadDocument,
+  downloadDocument,
+  clearDocument,
+  updateDocument,
+  updateDocumentSuccess,
+} = document.actions;
 
-export const uploadDocumentAsnyc = () => async dispatch => {
+export const uploadDocumentAsync = () => async dispatch => {
   dispatch(uploadDocument({loading: true, data: [], message: null}));
 
   try {
@@ -131,6 +135,15 @@ export const setDataExcel = data => dispatch => {
 export const updateDocumentAsync = payload => async dispatch => {
   dispatch(updateDocument(payload));
 
+  try {
+    await AsyncStorage.setItem('@excelData', JSON.stringify(payload.data));
+    dispatch(updateDocumentSuccess());
+    ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT);
+  } catch (error) {
+    console.error('Failed to update document:', error);
+    ToastAndroid.show('Gagal mengubah data', ToastAndroid.SHORT);
+  }
+
   await AsyncStorage.removeItem('@filteredData');
 };
 
@@ -157,6 +170,18 @@ const requestStoragePermission = async () => {
     }
   } catch (err) {
     console.warn(err);
+  }
+};
+
+export const clearDocumentAsync = payload => async dispatch => {
+  dispatch(clearDocument(payload));
+
+  try {
+    await AsyncStorage.removeItem('@excelData');
+    await AsyncStorage.removeItem('@filteredData');
+    await AsyncStorage.removeItem('biodata');
+  } catch (err) {
+    console.log(err);
   }
 };
 

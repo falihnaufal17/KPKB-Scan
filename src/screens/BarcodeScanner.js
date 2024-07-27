@@ -31,7 +31,7 @@ const BarcodeScanner = ({route}) => {
   const handleBarCodeScanned = codes => {
     let resQR = '';
     const [data] = codes;
-    console.log(codes);
+
     if (data?.value) {
       resQR = data?.value;
       if (resQR.toString().charAt(0) === '0') {
@@ -77,7 +77,7 @@ const BarcodeScanner = ({route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {device && !visible ? (
+      {hasPermission && !visible ? (
         <Camera
           style={styles.preview}
           device={device}

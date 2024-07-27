@@ -9,6 +9,14 @@ const SignIn = () => {
   const {name} = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
+  const onSubmit = () => {
+    if (!name) {
+      return;
+    }
+
+    dispatch(signInAsync(name?.trimStart()));
+  };
+
   return (
     <View style={styles.container}>
       <View>
@@ -24,15 +32,15 @@ const SignIn = () => {
           label="Nama Lengkap"
           mode="outlined"
           style={{marginBottom: 16}}
-          onChangeText={v => dispatch(updateName(v))}
-          onSubmitEditing={() => dispatch(signInAsync(name))}
+          onChangeText={v => dispatch(updateName(v.trimStart()))}
+          onSubmitEditing={onSubmit}
           keyboardType="default"
           textContentType="name"
           value={name}
         />
         <Button
           disabled={name.length <= 3}
-          onPress={() => dispatch(signInAsync(name))}
+          onPress={onSubmit}
           buttonColor={theme.colors.onPrimaryContainer}
           mode="contained">
           Masuk
