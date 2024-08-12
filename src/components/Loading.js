@@ -2,11 +2,11 @@ import React from 'react';
 import {ActivityIndicator} from 'react-native-paper';
 import {View, StyleSheet, Text} from 'react-native';
 
-const Loading = () => {
+const Loading = ({labelStyle, label = 'Mohon tunggu sedang memuat data'}) => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size={64} />
-      <Text style={styles.label}>Mohon tunggu sedang memuat data</Text>
+      <Text style={[styles.label, labelStyle]}>{label}</Text>
     </View>
   );
 };

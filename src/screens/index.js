@@ -8,6 +8,7 @@ import {useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setDataExcel} from '../reducers/document';
 import {useDispatch} from 'react-redux';
+import OpnameForm from './OpnameForm';
 
 const Stack = createNativeStackNavigator();
 
@@ -55,6 +56,13 @@ const Screen = () => {
               component={BarcodeScanner}
               options={{
                 animation: 'slide_from_right',
+              }}
+            />
+            <Stack.Screen
+              name="OpnameForm"
+              component={OpnameForm}
+              options={{
+                animation: 'slide_from_bottom',
               }}
             />
           </>
