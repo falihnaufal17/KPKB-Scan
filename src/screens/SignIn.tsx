@@ -1,13 +1,13 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Text, TextInput, Button, useTheme, withTheme} from 'react-native-paper';
-import {useDispatch, useSelector} from 'react-redux';
 import {signInAsync, updateName} from '../reducers/auth';
+import {useAppDispatch, useAppSelector} from '../store';
 
 const SignIn = () => {
   const theme = useTheme();
-  const {name} = useSelector(state => state.auth);
-  const dispatch = useDispatch();
+  const {name} = useAppSelector(state => state.auth);
+  const dispatch = useAppDispatch();
 
   const onSubmit = () => {
     if (!name) {

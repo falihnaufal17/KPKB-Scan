@@ -3,18 +3,17 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './Home';
 import SignIn from './SignIn';
 import BarcodeScanner from './BarcodeScanner';
-import Splash from './Splash';
-import {useSelector} from 'react-redux';
+// import Splash from './Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setDataExcel} from '../reducers/document';
-import {useDispatch} from 'react-redux';
 import OpnameForm from './OpnameForm';
+import {useAppDispatch, useAppSelector} from '../store';
 
 const Stack = createNativeStackNavigator();
 
 const Screen = () => {
-  const selector = useSelector(state => state.auth);
-  const dispatch = useDispatch();
+  const selector = useAppSelector(state => state.auth);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const getDataFromLocal = async () => {
@@ -33,13 +32,13 @@ const Screen = () => {
     getDataFromLocal();
   }, [dispatch]);
 
-  if (selector.loading) {
+  if (!selector.userToken) {
     return (
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="Splash" component={Splash} />
+        <Stack.Screen name="SignIn" component={SignIn} />
       </Stack.Navigator>
     );
   } else {
@@ -48,27 +47,21 @@ const Screen = () => {
         screenOptions={{
           headerShown: false,
         }}>
-        {selector.userToken ? (
-          <>
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen
-              name="Barcode"
-              component={BarcodeScanner}
-              options={{
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen
-              name="OpnameForm"
-              component={OpnameForm}
-              options={{
-                animation: 'slide_from_bottom',
-              }}
-            />
-          </>
-        ) : (
-          <Stack.Screen name="SignIn" component={SignIn} />
-        )}
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen
+          name="Barcode"
+          component={BarcodeScanner}
+          options={{
+            animation: 'slide_from_right',
+          }}
+        />
+        <Stack.Screen
+          name="OpnameForm"
+          component={OpnameForm}
+          options={{
+            animation: 'slide_from_bottom',
+          }}
+        />
       </Stack.Navigator>
     );
   }

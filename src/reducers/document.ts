@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import DocumentPicker from 'react-native-document-picker';
 import XLSX from 'xlsx';
 import {Buffer} from 'buffer';
@@ -6,38 +6,74 @@ import RNFS from 'react-native-fs';
 import {PermissionsAndroid, ToastAndroid} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Define types for state and payloads
+type DocumentState = {
+  data: any[];
+  loading: boolean;
+  message: string | null;
+  loadingDownload: boolean;
+  loadingUpdate: boolean;
+};
+
+type UploadDocumentPayload = {
+  loading: boolean;
+  data: any[];
+  message: string | null;
+};
+
+type DownloadDocumentPayload = {
+  loading: boolean;
+  message: string;
+};
+
+type ClearDocumentPayload = {
+  message: string;
+};
+
+type UpdateDocumentPayload = {
+  id: string;
+  value: any;
+  data: any[];
+};
+
+const initialState: DocumentState = {
+  data: [],
+  loading: false,
+  message: null,
+  loadingDownload: false,
+  loadingUpdate: false,
+};
+
 export const document = createSlice({
   name: 'document',
-  initialState: {
-    data: [],
-    loading: false,
-    message: null,
-    loadingDownload: false,
-    loadingUpdate: false,
-  },
+  initialState,
   reducers: {
-    uploadDocument: (state, action) => {
+    uploadDocument: (state, action: PayloadAction<UploadDocumentPayload>) => {
       state.loading = action.payload.loading;
       state.data = action.payload.data;
       state.message = action.payload.message;
     },
-    downloadDocument: (state, action) => {
+    downloadDocument: (
+      state,
+      action: PayloadAction<DownloadDocumentPayload>,
+    ) => {
       state.loadingDownload = action.payload.loading;
       state.message = action.payload.message;
     },
-    clearDocument: (state, action) => {
+    clearDocument: (state, action: PayloadAction<ClearDocumentPayload>) => {
       state.data = [];
       state.message = action.payload.message;
     },
-    updateDocument: (state, action) => {
+    updateDocument: (state, action: PayloadAction<UpdateDocumentPayload>) => {
       state.loadingUpdate = true;
       const newArray = [...state.data];
       const index = newArray.findIndex(
         obj => obj.kodebarang === action.payload.id,
       );
-      newArray[index] = {...newArray[index], qtyopname: action.payload.value};
-
-      state.data = newArray;
+      if (index !== -1) {
+        newArray[index] = {...newArray[index], qtyopname: action.payload.value};
+        state.data = newArray;
+      }
     },
     updateDocumentSuccess: state => {
       state.loadingUpdate = false;
@@ -55,7 +91,7 @@ export const {
   updateDocumentSuccess,
 } = document.actions;
 
-export const uploadDocumentAsync = () => async dispatch => {
+export const uploadDocumentAsync = () => async (dispatch: any) => {
   dispatch(uploadDocument({loading: true, data: [], message: null}));
 
   try {
@@ -97,18 +133,20 @@ export const uploadDocumentAsync = () => async dispatch => {
   }
 };
 
-export const downloadDocumentAsync = data => async dispatch => {
-  dispatch(downloadDocument({loading: true}));
+export const downloadDocumentAsync = (data: any[]) => async (dispatch: any) => {
+  dispatch(downloadDocument({loading: true, message: ''}));
   await requestStoragePermission();
 
   const now = new Date();
-  const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, '0');
-  const day = now.getDate().toString().padStart(2, '0');
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  const formattedDateTime = `${day}-${month}-${year}-${hours}-${minutes}-${seconds}`;
+  const formattedDateTime = `${now.getDate()}-${(now.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}-${now.getFullYear()}-${now
+    .getHours()
+    .toString()
+    .padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now
+    .getSeconds()
+    .toString()
+    .padStart(2, '0')}`;
   const workbook = convertJsonToWorkbook(data);
   const wbout = XLSX.write(workbook, {type: 'binary', bookType: 'xlsx'});
   const path = `${RNFS.DownloadDirectoryPath}/KPKB-${formattedDateTime}.xlsx`;
@@ -126,28 +164,29 @@ export const downloadDocumentAsync = data => async dispatch => {
   }
 };
 
-export const setDataExcel = data => dispatch => {
+export const setDataExcel = (data: any[]) => (dispatch: any) => {
   dispatch(
     uploadDocument({loading: false, data, message: 'Dokumen berhasil muat'}),
   );
 };
 
-export const updateDocumentAsync = payload => async dispatch => {
-  dispatch(updateDocument(payload));
+export const updateDocumentAsync =
+  (payload: UpdateDocumentPayload) => async (dispatch: any) => {
+    dispatch(updateDocument(payload));
 
-  try {
-    await AsyncStorage.setItem('@excelData', JSON.stringify(payload.data));
-    dispatch(updateDocumentSuccess());
-    ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT);
-  } catch (error) {
-    console.error('Failed to update document:', error);
-    ToastAndroid.show('Gagal mengubah data', ToastAndroid.SHORT);
-  }
+    try {
+      await AsyncStorage.setItem('@excelData', JSON.stringify(payload.data));
+      dispatch(updateDocumentSuccess());
+      ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT);
+    } catch (error) {
+      console.error('Failed to update document:', error);
+      ToastAndroid.show('Gagal mengubah data', ToastAndroid.SHORT);
+    }
 
-  await AsyncStorage.removeItem('@filteredData');
-};
+    await AsyncStorage.removeItem('@filteredData');
+  };
 
-const convertJsonToWorkbook = json => {
+const convertJsonToWorkbook = (json: any[]) => {
   const sheet = XLSX.utils.json_to_sheet(json);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, sheet, 'Sheet1');
@@ -161,6 +200,7 @@ const requestStoragePermission = async () => {
       {
         title: 'Storage Permission',
         message: 'MyApp needs access to your device storage to save files.',
+        buttonPositive: 'OK',
       },
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
@@ -173,16 +213,17 @@ const requestStoragePermission = async () => {
   }
 };
 
-export const clearDocumentAsync = payload => async dispatch => {
-  dispatch(clearDocument(payload));
+export const clearDocumentAsync =
+  (payload: ClearDocumentPayload) => async (dispatch: any) => {
+    dispatch(clearDocument(payload));
 
-  try {
-    await AsyncStorage.removeItem('@excelData');
-    await AsyncStorage.removeItem('@filteredData');
-    await AsyncStorage.removeItem('biodata');
-  } catch (err) {
-    console.log(err);
-  }
-};
+    try {
+      await AsyncStorage.removeItem('@excelData');
+      await AsyncStorage.removeItem('@filteredData');
+      await AsyncStorage.removeItem('biodata');
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
 export default document.reducer;
