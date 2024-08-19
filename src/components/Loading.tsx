@@ -1,8 +1,16 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {ActivityIndicator} from 'react-native-paper';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, TextStyle} from 'react-native';
 
-const Loading = ({labelStyle, label = 'Mohon tunggu sedang memuat data'}) => {
+interface LoadingProps {
+  labelStyle?: TextStyle;
+  label?: string;
+}
+
+const Loading: FC<LoadingProps> = ({
+  labelStyle,
+  label = 'Mohon tunggu sedang memuat data',
+}) => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size={64} />

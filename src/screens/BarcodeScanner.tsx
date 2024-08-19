@@ -1,9 +1,8 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {FC, useCallback, useEffect, useState} from 'react';
 import {Dimensions, StyleSheet, View, SafeAreaView} from 'react-native';
 import {
   MD3Colors,
   Text,
-  withTheme,
   TextInput,
   TouchableRipple,
   Button,
@@ -11,30 +10,45 @@ import {
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Camera,
+  Code,
   useCameraDevice,
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import beepSound from '../assets/store-scanner-beep-90395.mp3';
 import Loading from '../components/Loading';
 
-const BarcodeScanner = ({route}) => {
+interface BarcodeScannerRoute {
+  params: {
+    scannedData: {
+      barcode: string;
+    };
+  };
+  key: string;
+  name: string;
+  path?: string | undefined;
+}
+
+const BarcodeScanner: FC = () => {
   const [qrData, setQrData] = useState('');
   const [loading, setLoading] = useState(false);
   const {hasPermission, requestPermission} = useCameraPermission();
   const device = useCameraDevice('back');
-  const navigation = useNavigation();
+  const navigation = useNavigation<{
+    navigate: (name: string, params: Record<string, any>) => void;
+  }>();
+  const route = useRoute<BarcodeScannerRoute>();
 
-  /**
-   *
-   * @param {object[]} codes
-   */
-  const handleBarCodeScanned = codes => {
+  const handleBarCodeScanned = (codes: Code[]) => {
     if (codes.length > 0) {
       SoundPlayer.playAsset(beepSound);
-      setQrData(codes?.[0]?.value?.substring(1));
+      setQrData(codes?.[0]?.value?.substring(1) || '');
       navigation.navigate('OpnameForm', {
         barcode: codes?.[0]?.value?.substring(1),
       });
@@ -77,9 +91,12 @@ const BarcodeScanner = ({route}) => {
     }
   }, [hasPermission, onRequestPermission, route.params?.scannedData?.barcode]);
 
-  const handleInputCode = val => {
+  const handleInputCode = (val: string) => {
     setQrData(val);
   };
+
+  const handleSubmitCode = () =>
+    handleBarCodeScanned([{type: 'unknown', value: qrData}]);
 
   // const onDismiss = async () => {
   //   await AsyncStorage.removeItem('@filteredData');
@@ -128,17 +145,16 @@ const BarcodeScanner = ({route}) => {
         <TextInput
           style={styles.formControl}
           keyboardType="number-pad"
-          onChangeText={v => handleInputCode(v)}
-          onSubmitEditing={() => handleBarCodeScanned({type: '', data: qrData})}
+          onChangeText={handleInputCode}
+          onSubmitEditing={handleSubmitCode}
           value={qrData}
           placeholder="Masukan kode"
           mode="outlined"
         />
         <TouchableRipple
           style={[styles.btnSubmit, !qrData ? styles.btnSubmitDisabled : {}]}
-          activeOpacity={0.8}
           disabled={!qrData}
-          onPress={() => handleBarCodeScanned([{type: '', value: qrData}])}>
+          onPress={handleSubmitCode}>
           <Text style={styles.txtSubmit}>Submit</Text>
         </TouchableRipple>
       </View>
@@ -203,4 +219,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withTheme(BarcodeScanner);
+export default BarcodeScanner;

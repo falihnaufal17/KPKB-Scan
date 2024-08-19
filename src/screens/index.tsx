@@ -3,7 +3,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './Home';
 import SignIn from './SignIn';
 import BarcodeScanner from './BarcodeScanner';
-// import Splash from './Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setDataExcel} from '../reducers/document';
 import OpnameForm from './OpnameForm';
@@ -18,8 +17,9 @@ const Screen = () => {
   useEffect(() => {
     const getDataFromLocal = async () => {
       try {
-        const excelData =
-          JSON.parse(await AsyncStorage.getItem('@excelData')) || [];
+        const excelDataAsync =
+          (await AsyncStorage.getItem('@excelData')) || null;
+        const excelData = excelDataAsync ? JSON.parse(excelDataAsync) : [];
 
         if (excelData.length > 0) {
           dispatch(setDataExcel(excelData));

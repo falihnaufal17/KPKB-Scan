@@ -1,8 +1,15 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {StyleSheet} from 'react-native';
 import {FAB, MD3Colors} from 'react-native-paper';
 
-const Scanner = ({navigation}) => {
+interface ScannerProps {
+  navigation: {
+    navigate: (name: string, params: Record<string, any>) => void;
+    push: (name: string) => void;
+  };
+}
+
+const Scanner: FC<ScannerProps> = ({navigation}) => {
   return (
     <FAB
       icon="barcode-scan"

@@ -4,5 +4,6 @@ module.exports = {
   rules: {
     'react-native/no-inline-styles': 'off',
     'no-unused-vars': 'error',
+    'react-hooks/exhaustive-deps': 'off',
   },
 };

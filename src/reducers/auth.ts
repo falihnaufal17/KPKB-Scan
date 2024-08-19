@@ -8,7 +8,7 @@ type AuthPayload = {
   token: string;
   userToken?: string | null;
   name: string;
-};
+} | null;
 
 type AuthState = {
   name: string;
@@ -31,12 +31,12 @@ export const auth = createSlice({
     },
     signIn: (state, action: PayloadAction<AuthPayload>) => {
       state.loading = false;
-      state.name = action.payload.name;
-      state.userToken = action.payload.token;
+      state.name = action.payload?.name || '';
+      state.userToken = action.payload?.token || '';
     },
     restoreToken: (state, action: PayloadAction<Partial<AuthPayload>>) => {
-      state.userToken = action.payload.userToken ?? null;
-      state.name = action.payload.name ?? '';
+      state.userToken = action.payload?.userToken ?? null;
+      state.name = action.payload?.name ?? '';
       state.loading = false;
     },
     signOut: state => {

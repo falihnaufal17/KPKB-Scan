@@ -1,11 +1,15 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {View} from 'react-native';
 import {Button, MD3Colors} from 'react-native-paper';
-import {useDispatch} from 'react-redux';
 import {clearDocumentAsync, downloadDocumentAsync} from '../reducers/document';
+import {useAppDispatch} from '../store';
 
-const ListHeader = ({data}) => {
-  const dispatch = useDispatch();
+interface ListHeaderProps {
+  data: any[];
+}
+
+const ListHeader: FC<ListHeaderProps> = ({data}) => {
+  const dispatch = useAppDispatch();
 
   return (
     <View

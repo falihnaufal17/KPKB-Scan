@@ -1,14 +1,17 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {Appbar, Menu, TouchableRipple, Text} from 'react-native-paper';
-import propTypes from 'prop-types';
 import {View} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
 import {signOutAsync} from '../reducers/auth';
+import {useAppDispatch, useAppSelector} from '../store';
 
-const Header = ({title}) => {
+interface HeaderProps {
+  title: string;
+}
+
+const Header: FC<HeaderProps> = ({title}) => {
   const [visible, setVisible] = React.useState(false);
-  const dispatch = useDispatch();
-  const {name} = useSelector(state => state.auth);
+  const dispatch = useAppDispatch();
+  const {name} = useAppSelector(state => state.auth);
 
   const openMenu = () => setVisible(true);
 
@@ -24,7 +27,7 @@ const Header = ({title}) => {
           anchor={
             <TouchableRipple
               onPress={openMenu}
-              backgroundColor="transparent"
+              background="transparent"
               style={{marginRight: 16}}>
               <Text
                 style={{
@@ -43,7 +46,3 @@ const Header = ({title}) => {
 };
 
 export default Header;
-
-Header.propTypes = {
-  title: propTypes.string,
-};

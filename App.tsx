@@ -1,16 +1,14 @@
-import React from 'react';
-import {Provider as PaperProvider, useTheme} from 'react-native-paper';
+import React, {FC} from 'react';
+import {MD3LightTheme, Provider as PaperProvider} from 'react-native-paper';
 import Screen from './src/screens';
 import {Provider} from 'react-redux';
 import store from './src/store';
 import {NavigationContainer} from '@react-navigation/native';
 
-const App: React.JSX.Element = () => {
-  const theme = useTheme();
-
+const App: FC = () => {
   return (
     <Provider store={store}>
-      <PaperProvider theme={theme}>
+      <PaperProvider theme={MD3LightTheme}>
         <NavigationContainer>
           <Screen />
         </NavigationContainer>

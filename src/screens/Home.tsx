@@ -1,39 +1,40 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import {StatusBar, ToastAndroid, View} from 'react-native';
+import React, {FC, useEffect} from 'react';
+import {SafeAreaView, StatusBar, ToastAndroid, View} from 'react-native';
 import {MD3Colors, Text} from 'react-native-paper';
 import ListEmpty from '../components/ListEmpty';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
 import ListHeader from '../components/ListHeader';
 import LoadingPopup from '../components/LoadingPopup';
-import {useSelector} from 'react-redux';
 import Scanner from '../components/Scanner';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useAppSelector} from '../store';
 
-const Home = ({navigation, route}) => {
-  const {loading, message, data, loadingDownload} = useSelector(
+interface HomeProps {
+  navigation: {
+    navigate: (name: string, params: Record<string, any>) => void;
+    push: (name: string) => void;
+  };
+}
+
+const Home: FC<HomeProps> = ({navigation}) => {
+  const {loading, message, data, loadingDownload} = useAppSelector(
     state => state.document,
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (message) {
       ToastAndroid.show(message, ToastAndroid.SHORT);
     }
   }, [message]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchFromLocal = async () => {
-      const scannedData =
-        JSON.parse(await AsyncStorage.getItem('@filteredData')) || null;
+      const scannedDataAsync = await AsyncStorage.getItem('@filteredData');
+      const scannedData = scannedDataAsync
+        ? JSON.parse(scannedDataAsync)
+        : null;
 
       if (scannedData) {
         navigation.navigate('Barcode', {scannedData});
@@ -41,10 +42,10 @@ const Home = ({navigation, route}) => {
     };
 
     fetchFromLocal();
-  }, [data, navigation]);
+  }, [data, navigation.navigate]);
 
   return (
-    <>
+    <SafeAreaView style={{backgroundColor: '#FFF', flex: 1}}>
       <StatusBar backgroundColor={MD3Colors.primary40} />
       <Header title="KPKB" />
       <View
@@ -52,6 +53,7 @@ const Home = ({navigation, route}) => {
           flex: 1,
           justifyContent: 'center',
           marginHorizontal: 16,
+          backgroundColor: '#FFF',
         }}>
         {loading ? (
           <Loading />
@@ -82,7 +84,7 @@ const Home = ({navigation, route}) => {
       </View>
       {data.length > 0 ? <Scanner navigation={navigation} /> : null}
       <LoadingPopup visible={loadingDownload} />
-    </>
+    </SafeAreaView>
   );
 };
 

@@ -1,7 +1,11 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {ActivityIndicator, Modal, Portal, Text} from 'react-native-paper';
 
-const LoadingPopup = ({visible}) => {
+interface LoadingPopupProps {
+  visible: boolean;
+}
+
+const LoadingPopup: FC<LoadingPopupProps> = ({visible}) => {
   return (
     <Portal>
       <Modal visible={visible}>

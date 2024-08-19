@@ -1,17 +1,30 @@
-import React, {useEffect, useState, useMemo} from 'react';
+import React, {useEffect, useState, useMemo, FC} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Text, TextInput, Button, MD3Colors} from 'react-native-paper';
-import {useDispatch, useSelector} from 'react-redux';
 import {updateDocumentAsync, uploadDocument} from '../reducers/document';
+import {useAppDispatch, useAppSelector} from '../store';
+import {useRoute} from '@react-navigation/native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OpnameForm = ({visible = false, onDismiss, barcode}) => {
-  const {data} = useSelector(s => s.document);
+interface OpnameFormRoute {
+  params: {
+    onDismiss: () => void;
+    barcode: string;
+  };
+  key: string;
+  name: string;
+  path?: string | undefined;
+}
+
+const OpnameForm: FC = ({}) => {
+  const {data} = useAppSelector(s => s.document);
   const [qty, setQty] = useState(0);
-  const [filteredData] = useState(null);
+  const [filteredData] = useState<any>({});
   const [selisih, setSelisih] = useState(0);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const {params} = useRoute<OpnameFormRoute>();
+  const {barcode, onDismiss} = params;
 
   // Memoize the creation of a Map for fast lookups
   const dataMap = useMemo(() => {
@@ -50,10 +63,7 @@ const OpnameForm = ({visible = false, onDismiss, barcode}) => {
   // }, [filteredData?.selisih]);
 
   return (
-    <View
-      visible={visible}
-      onDismiss={onDismiss}
-      contentContainerStyle={styles.containerStyle}>
+    <View>
       {/* <Animatable.View animation="slideInRight" duration={800}> */}
       <Text variant="titleLarge" style={{marginBottom: 8, textAlign: 'center'}}>
         Tambah kuantitas
@@ -109,8 +119,10 @@ const OpnameForm = ({visible = false, onDismiss, barcode}) => {
         keyboardType="number-pad"
         style={styles.qty}
         onChangeText={v => {
-          setQty(v);
-          setSelisih(v - filteredData?.qtysystem);
+          const numberValue = Number(v);
+
+          setQty(numberValue);
+          setSelisih(numberValue - filteredData?.qtysystem);
         }}
       />
       <Button
@@ -137,7 +149,13 @@ const OpnameForm = ({visible = false, onDismiss, barcode}) => {
 
           const payload = newArray;
 
-          await dispatch(updateDocumentAsync({data: payload}));
+          await dispatch(
+            updateDocumentAsync({
+              data: payload,
+              id: '',
+              value: undefined,
+            }),
+          );
           await dispatch(
             uploadDocument({
               loading: false,
