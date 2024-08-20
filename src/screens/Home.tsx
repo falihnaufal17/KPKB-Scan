@@ -1,5 +1,11 @@
 import React, {FC, useEffect, useState} from 'react';
-import {SafeAreaView, StatusBar, ToastAndroid, View} from 'react-native';
+import {
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {MD3Colors, Text} from 'react-native-paper';
 import ListEmpty from '../components/ListEmpty';
 import Header from '../components/Header';
@@ -7,10 +13,11 @@ import Loading from '../components/Loading';
 import ListHeader from '../components/ListHeader';
 import LoadingPopup from '../components/LoadingPopup';
 import Scanner from '../components/Scanner';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAppSelector} from '../store';
 import GuidelineModal from '../components/GuidelineModal';
+import ScanBarcode from '../assets/icons/ScanBarcode';
+import {textColor} from '../constants/colors';
 
 interface HomeProps {
   navigation: {
@@ -49,7 +56,7 @@ const Home: FC<HomeProps> = ({navigation}) => {
   }, [data, navigation.navigate]);
 
   return (
-    <SafeAreaView style={{backgroundColor: '#FFF', flex: 1}}>
+    <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={MD3Colors.primary40} />
       <Header title="KPKB" />
       <View
@@ -63,23 +70,19 @@ const Home: FC<HomeProps> = ({navigation}) => {
           <Loading />
         ) : data.length > 0 ? (
           <>
-            <Text
-              variant="titleLarge"
-              style={{marginBottom: 16, textAlign: 'center'}}>
-              Data berhasil diunggah!
-            </Text>
-            <Text
-              variant="bodyLarge"
-              style={{marginBottom: 16, textAlign: 'center'}}>
+            <Text style={styles.title}>Data berhasil diunggah!</Text>
+            <Text style={styles.description}>
               Terdeteksi <Text style={{fontWeight: '800'}}>{data.length}</Text>{' '}
               data produk
             </Text>
-            <Text
-              variant="bodyLarge"
-              style={{marginBottom: 16, textAlign: 'center'}}>
-              Silakan klik ikon <Icon name="barcode-scan" size={20} /> untuk
-              melakukan scan barcode pada produk atau lakukan aksi di bawah ini
-            </Text>
+            <View style={styles.descriptionContainer}>
+              <Text style={{textAlign: 'center'}}>Silakan klik ikon</Text>
+              <ScanBarcode />
+              <Text>
+                untuk melakukan scan barcode pada produk atau lakukan aksi di
+                bawah ini
+              </Text>
+            </View>
             <ListHeader data={data} />
           </>
         ) : (
@@ -94,3 +97,23 @@ const Home: FC<HomeProps> = ({navigation}) => {
 };
 
 export default Home;
+
+const styles = StyleSheet.create({
+  container: {backgroundColor: '#FFF', flex: 1},
+  title: {
+    color: textColor,
+    fontSize: 26,
+    fontFamily: 'Roboto-Medium',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  descriptionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  description: {
+    fontSize: 14,
+    color: textColor,
+    textAlign: 'center',
+  },
+});
