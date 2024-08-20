@@ -8,7 +8,11 @@ import {primary, textColor} from '../constants/colors';
 import Warning from '../assets/icons/Warning';
 import BookSquare from '../assets/icons/BookSquare';
 
-const ListEmpty: FC = () => {
+interface ListEmptyProps {
+  onShowGuideline: () => void;
+}
+
+const ListEmpty: FC<ListEmptyProps> = ({onShowGuideline}) => {
   const dispatch = useAppDispatch();
 
   return (
@@ -23,7 +27,7 @@ const ListEmpty: FC = () => {
       <Button
         icon={BookSquare}
         mode="text"
-        onPress={() => dispatch(uploadDocumentAsync())}
+        onPress={onShowGuideline}
         textColor={primary}>
         Lihat Panduan
       </Button>
@@ -51,11 +55,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     marginVertical: 16,
+    fontFamily: 'Roboto-Medium',
   },
   textNotFoundDescription: {
     fontSize: 14,
     fontWeight: '500',
     marginTop: 0,
+    fontFamily: 'Roboto',
   },
 });
 

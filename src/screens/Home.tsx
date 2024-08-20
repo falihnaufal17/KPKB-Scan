@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {SafeAreaView, StatusBar, ToastAndroid, View} from 'react-native';
 import {MD3Colors, Text} from 'react-native-paper';
 import ListEmpty from '../components/ListEmpty';
@@ -10,6 +10,7 @@ import Scanner from '../components/Scanner';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAppSelector} from '../store';
+import GuidelineModal from '../components/GuidelineModal';
 
 interface HomeProps {
   navigation: {
@@ -22,6 +23,9 @@ const Home: FC<HomeProps> = ({navigation}) => {
   const {loading, message, data, loadingDownload} = useAppSelector(
     state => state.document,
   );
+  const [showGuideline, setShowGuideline] = useState(false);
+
+  const onToggleGuideline = () => setShowGuideline(!showGuideline);
 
   useEffect(() => {
     if (message) {
@@ -79,11 +83,12 @@ const Home: FC<HomeProps> = ({navigation}) => {
             <ListHeader data={data} />
           </>
         ) : (
-          <ListEmpty />
+          <ListEmpty onShowGuideline={onToggleGuideline} />
         )}
       </View>
       {data.length > 0 ? <Scanner navigation={navigation} /> : null}
       <LoadingPopup visible={loadingDownload} />
+      <GuidelineModal visible={showGuideline} onClose={onToggleGuideline} />
     </SafeAreaView>
   );
 };

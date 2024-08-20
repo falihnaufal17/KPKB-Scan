@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     color: textColor,
     fontSize: 26,
     textAlign: 'center',
-    fontWeight: '600',
+    fontFamily: 'Roboto-Medium',
   },
   logo: {
     width: 175,
@@ -145,5 +145,6 @@ const styles = StyleSheet.create({
   inputLabel: {
     textAlign: 'left',
     marginBottom: 10,
+    fontFamily: 'Roboto',
   },
 });
