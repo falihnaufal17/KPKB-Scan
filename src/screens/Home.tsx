@@ -18,10 +18,11 @@ import GuidelineModal from '../components/GuidelineModal';
 import ScanBarcode from '../assets/icons/ScanBarcode';
 import {textColor} from '../constants/colors';
 import {getProductsAsync} from '../actions/product';
+import {OPNAME_STOCK_STARTED} from '../constants/states';
 
 interface HomeProps {
   navigation: {
-    navigate: (name: string, params: Record<string, any>) => void;
+    navigate: (name: string, params?: Record<string, any>) => void;
     push: (name: string) => void;
   };
 }
@@ -35,15 +36,29 @@ const Home: FC<HomeProps> = ({navigation}) => {
 
   const onToggleGuideline = () => setShowGuideline(!showGuideline);
 
+  const onCheckOpnameStarted = () => {
+    if (data) {
+      const opnameStartedData = data.find(
+        item => item.state === OPNAME_STOCK_STARTED,
+      );
+
+      if (opnameStartedData) {
+        navigation.navigate('OpnameForm', {
+          barcode: opnameStartedData.barcode,
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     if (message) {
       ToastAndroid.show(message, ToastAndroid.SHORT);
     }
   }, [message]);
 
-  // useEffect(() => {
-
-  // }, [data, navigation.navigate]);
+  useEffect(() => {
+    onCheckOpnameStarted();
+  }, [data, navigation.navigate]);
 
   useEffect(() => {
     dispatch(getProductsAsync());

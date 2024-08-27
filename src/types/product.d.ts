@@ -1,10 +1,12 @@
 export type Product = {
-  uuid: string;
   code: string;
   name: string;
   unit: string;
   barcode: string;
-  qty: int;
+  qtyopname: number;
+  qtysystem: number;
+  difference: number;
+  state?: string;
 };
 
 export type DocumentState = {
@@ -13,6 +15,7 @@ export type DocumentState = {
   message: string | null;
   loadingDownload: boolean;
   loadingUpdate: boolean;
+  scannedData: Product;
 };
 
 export type UploadDocumentPayload = {
@@ -31,7 +34,7 @@ export type ClearDocumentPayload = {
 };
 
 export type UpdateDocumentPayload = {
-  id: string;
+  code: string;
   value: any;
   data: Product[];
 };

@@ -22,7 +22,7 @@ const GuidelineModal: FC<GuidelineProps> = ({visible, onClose}) => {
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Panduan Excel</Text>
-            <TouchableOpacity onPress={onClose}>
+            <TouchableOpacity style={styles.buttonClose} onPress={onClose}>
               <X />
             </TouchableOpacity>
           </View>
@@ -127,5 +127,8 @@ const styles = StyleSheet.create({
     color: textColor,
     fontFamily: 'Roboto',
     fontSize: 14,
+  },
+  buttonClose: {
+    padding: 10,
   },
 });

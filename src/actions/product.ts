@@ -1,6 +1,7 @@
 import {
   clearDocument,
   downloadDocument,
+  scannedBarcode,
   updateDocument,
   updateDocumentSuccess,
   uploadDocument,
@@ -11,12 +12,9 @@ import {Buffer} from 'buffer';
 import RNFS from 'react-native-fs';
 import {PermissionsAndroid, ToastAndroid} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  ClearDocumentPayload,
-  Product,
-  UpdateDocumentPayload,
-} from '../types/product';
+import {ClearDocumentPayload, Product} from '../types/product';
 import ProductModel from '../models/Product';
+import {OPNAME_STOCK_FINISHED, OPNAME_STOCK_STARTED} from '../constants/states';
 
 export const uploadDocumentAsync = () => async (dispatch: any) => {
   dispatch(uploadDocument({loading: true, data: [], message: null}));
@@ -38,9 +36,17 @@ export const uploadDocumentAsync = () => async (dispatch: any) => {
     const binaryData = Buffer.from(fileData, 'base64').toString('binary');
     const workbook = XLSX.read(binaryData, {type: 'binary'});
     const sheetNames = workbook.SheetNames;
-    const sheetData: Product[] = XLSX.utils.sheet_to_json(
-      workbook.Sheets[sheetNames[0]],
-    );
+    const sheetData: Product[] = XLSX.utils
+      .sheet_to_json(workbook.Sheets[sheetNames[0]])
+      .map((item: any) => ({
+        code: item.kodebarang,
+        name: item.nama,
+        unit: item.unit,
+        barcode: item.barcode,
+        qtyopname: item.qtyopname,
+        qtysystem: item.qtysystem,
+        difference: item.selisih || 0,
+      }));
     const product = new ProductModel();
 
     await product.save(sheetData);
@@ -63,36 +69,46 @@ export const uploadDocumentAsync = () => async (dispatch: any) => {
   }
 };
 
-export const downloadDocumentAsync = (data: any[]) => async (dispatch: any) => {
-  dispatch(downloadDocument({loading: true, message: ''}));
-  await requestStoragePermission();
+export const downloadDocumentAsync =
+  (data: Product[]) => async (dispatch: any) => {
+    dispatch(downloadDocument({loading: true, message: ''}));
+    await requestStoragePermission();
 
-  const now = new Date();
-  const formattedDateTime = `${now.getDate()}-${(now.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}-${now.getFullYear()}-${now
-    .getHours()
-    .toString()
-    .padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now
-    .getSeconds()
-    .toString()
-    .padStart(2, '0')}`;
-  const workbook = convertJsonToWorkbook(data);
-  const wbout = XLSX.write(workbook, {type: 'binary', bookType: 'xlsx'});
-  const path = `${RNFS.DownloadDirectoryPath}/KPKB-${formattedDateTime}.xlsx`;
+    const now = new Date();
+    const formattedDateTime = `${now.getDate()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}-${now.getFullYear()}-${now
+      .getHours()
+      .toString()
+      .padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now
+      .getSeconds()
+      .toString()
+      .padStart(2, '0')}`;
+    const jsonSheet = data.map(item => ({
+      kodebarang: item.code,
+      nama: item.name,
+      unit: item.unit,
+      barcode: item.barcode,
+      qtyopname: item.qtyopname,
+      qtysystem: item.qtysystem,
+      selisih: item.difference || 0,
+    }));
+    const workbook = convertJsonToWorkbook(jsonSheet);
+    const wbout = XLSX.write(workbook, {type: 'binary', bookType: 'xlsx'});
+    const path = `${RNFS.DownloadDirectoryPath}/KPKB-${formattedDateTime}.xlsx`;
 
-  try {
-    await RNFS.writeFile(path, wbout, 'ascii');
-    dispatch(
-      downloadDocument({loading: false, message: 'Berhasil mengunduh file'}),
-    );
-  } catch (e) {
-    dispatch(
-      downloadDocument({loading: false, message: `Terjadi kesalahan ${e}`}),
-    );
-    console.error(e);
-  }
-};
+    try {
+      await RNFS.writeFile(path, wbout, 'ascii');
+      dispatch(
+        downloadDocument({loading: false, message: 'Berhasil mengunduh file'}),
+      );
+    } catch (e) {
+      dispatch(
+        downloadDocument({loading: false, message: `Terjadi kesalahan ${e}`}),
+      );
+      console.error(e);
+    }
+  };
 
 export const getProductsAsync = () => async (dispatch: any) => {
   const product = new ProductModel();
@@ -104,12 +120,17 @@ export const getProductsAsync = () => async (dispatch: any) => {
 };
 
 export const updateDocumentAsync =
-  (payload: UpdateDocumentPayload) => async (dispatch: any) => {
-    dispatch(updateDocument(payload));
+  (payload: Product) => async (dispatch: any) => {
+    payload.state = OPNAME_STOCK_FINISHED;
 
     try {
-      await AsyncStorage.setItem('@excelData', JSON.stringify(payload.data));
+      const product = new ProductModel();
+
+      await product.update(payload.code, payload);
+
       dispatch(updateDocumentSuccess());
+      dispatch(updateDocument(payload));
+
       ToastAndroid.show('Data berhasil diubah', ToastAndroid.SHORT);
     } catch (error) {
       console.error('Failed to update document:', error);
@@ -154,5 +175,44 @@ export const clearDocumentAsync =
       await AsyncStorage.removeItem('products');
     } catch (err) {
       console.log(err);
+    }
+  };
+
+export const scannedBarcodeAsync = (code: string) => async (dispatch: any) => {
+  try {
+    const product = new ProductModel();
+    const productScanned = await product.findByBarcode(code);
+    productScanned.state = OPNAME_STOCK_STARTED;
+
+    await product.update(productScanned.code, productScanned);
+
+    dispatch(scannedBarcode(productScanned));
+  } catch (error: any) {
+    console.log(error);
+  }
+};
+
+export const cancelScannBarcodeAsync =
+  (code: string) => async (dispatch: any) => {
+    try {
+      const product = new ProductModel();
+      const productScanned = await product.findByBarcode(code);
+      productScanned.state = '';
+
+      await product.update(productScanned.code, productScanned);
+
+      dispatch(
+        scannedBarcode({
+          barcode: '',
+          code: '',
+          difference: 0,
+          name: '',
+          qtyopname: 0,
+          qtysystem: 0,
+          unit: '',
+        }),
+      );
+    } catch (error: any) {
+      console.log(error);
     }
   };

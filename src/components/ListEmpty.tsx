@@ -15,6 +15,8 @@ interface ListEmptyProps {
 const ListEmpty: FC<ListEmptyProps> = ({onShowGuideline}) => {
   const dispatch = useAppDispatch();
 
+  const onUpload = () => dispatch(uploadDocumentAsync());
+
   return (
     <View style={styles.container}>
       <Warning />
@@ -35,7 +37,7 @@ const ListEmpty: FC<ListEmptyProps> = ({onShowGuideline}) => {
         buttonColor={primary}
         icon="upload"
         mode="contained"
-        onPress={() => dispatch(uploadDocumentAsync())}
+        onPress={onUpload}
         style={{marginTop: 16}}>
         Unggah File
       </Button>

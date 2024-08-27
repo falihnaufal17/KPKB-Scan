@@ -12,12 +12,14 @@ interface ScannerProps {
 }
 
 const Scanner: FC<ScannerProps> = ({navigation}) => {
+  const onNavigateScanner = () => navigation.push('Barcode');
+
   return (
     <FAB
       icon={ScanBarcodeWhite}
       style={styles.fab}
       color={MD3Colors.primary100}
-      onPress={() => navigation.push('Barcode')}
+      onPress={onNavigateScanner}
     />
   );
 };

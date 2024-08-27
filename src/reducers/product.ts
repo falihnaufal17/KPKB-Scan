@@ -4,7 +4,6 @@ import {
   DocumentState,
   DownloadDocumentPayload,
   Product,
-  UpdateDocumentPayload,
   UploadDocumentPayload,
 } from '../types/product';
 
@@ -14,6 +13,15 @@ const initialState: DocumentState = {
   message: null,
   loadingDownload: false,
   loadingUpdate: false,
+  scannedData: {
+    barcode: '',
+    code: '',
+    difference: 0,
+    name: '',
+    qtyopname: 0,
+    qtysystem: 0,
+    unit: '',
+  },
 };
 
 export const product = createSlice({
@@ -36,20 +44,28 @@ export const product = createSlice({
       state.data = [];
       state.message = action.payload.message;
     },
-    updateDocument: (state, action: PayloadAction<UpdateDocumentPayload>) => {
-      state.loadingUpdate = true;
+    updateDocument: (state, action: PayloadAction<Product>) => {
       const newArray = [...state.data];
       const index = newArray.findIndex(
-        (obj: Product) => obj.uuid === action.payload.id,
+        (obj: Product) => obj.code === action.payload.code,
       );
       if (index !== -1) {
-        newArray[index] = {...newArray[index], qty: action.payload.value};
+        newArray[index] = {
+          ...newArray[index],
+          qtyopname: action.payload.qtyopname,
+          difference: action.payload.difference,
+          state: action.payload?.state,
+        };
+
         state.data = newArray;
       }
     },
     updateDocumentSuccess: state => {
       state.loadingUpdate = false;
       state.message = 'Data berhasil diubah';
+    },
+    scannedBarcode: (state, action: PayloadAction<Product>) => {
+      state.scannedData = action.payload;
     },
   },
 });
@@ -61,6 +77,7 @@ export const {
   clearDocument,
   updateDocument,
   updateDocumentSuccess,
+  scannedBarcode,
 } = product.actions;
 
 export default product.reducer;

@@ -14,6 +14,11 @@ interface ListHeaderProps {
 const ListHeader: FC<ListHeaderProps> = ({data}) => {
   const dispatch = useAppDispatch();
 
+  const onClear = () =>
+    dispatch(clearDocumentAsync({message: 'Dokumen dibersihkan'}));
+
+  const onDownload = () => dispatch(downloadDocumentAsync(data));
+
   return (
     <View style={styles.container}>
       <Button
@@ -22,9 +27,7 @@ const ListHeader: FC<ListHeaderProps> = ({data}) => {
         icon={TrashSquare}
         mode="contained"
         style={styles.button}
-        onPress={() =>
-          dispatch(clearDocumentAsync({message: 'Dokumen dibersihkan'}))
-        }>
+        onPress={onClear}>
         Bersihkan
       </Button>
       <Button
@@ -33,7 +36,7 @@ const ListHeader: FC<ListHeaderProps> = ({data}) => {
         icon={FileDown}
         mode="contained"
         style={styles.button}
-        onPress={() => dispatch(downloadDocumentAsync(data))}>
+        onPress={onDownload}>
         Unduh
       </Button>
     </View>

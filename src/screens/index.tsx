@@ -1,36 +1,15 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './Home';
 import SignIn from './SignIn';
-import BarcodeScanner from './BarcodeScanner';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {setDataExcel} from '../reducers/product';
+import Scanner from './Scanner';
 import OpnameForm from './OpnameForm';
-import {useAppDispatch, useAppSelector} from '../store';
+import {useAppSelector} from '../store';
 
 const Stack = createNativeStackNavigator();
 
 const Screen = () => {
   const selector = useAppSelector(state => state.auth);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const getDataFromLocal = async () => {
-      try {
-        const excelDataAsync =
-          (await AsyncStorage.getItem('@excelData')) || null;
-        const excelData = excelDataAsync ? JSON.parse(excelDataAsync) : [];
-
-        if (excelData.length > 0) {
-          dispatch(setDataExcel(excelData));
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    getDataFromLocal();
-  }, [dispatch]);
 
   if (!selector.userToken) {
     return (
@@ -50,7 +29,7 @@ const Screen = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen
           name="Barcode"
-          component={BarcodeScanner}
+          component={Scanner}
           options={{
             animation: 'slide_from_right',
           }}

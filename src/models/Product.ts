@@ -1,14 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {v4 as uuidv4} from 'uuid';
 import {Product as ProductType} from '../types/product';
 
 class Product {
-  public uuid: string;
-
-  constructor() {
-    this.uuid = uuidv4();
-  }
-
   async save(payload: any) {
     try {
       await AsyncStorage.setItem('products', JSON.stringify(payload));
@@ -29,7 +22,7 @@ class Product {
     }
   }
 
-  async findByBarcode(barcode?: string) {
+  async findByBarcode(barcode?: string): Promise<ProductType> {
     try {
       if (!barcode) {
         throw new Error('No barcode detected');
@@ -55,21 +48,21 @@ class Product {
     }
   }
 
-  async update(uuid: string, payload: any) {
+  async update(code: string, payload: any) {
     try {
       const data: string | null = await AsyncStorage.getItem('products');
       if (data) {
         const parsedData = JSON.parse(data);
 
         const itemIndex = parsedData.findIndex(
-          (item: any) => item.uuid === uuid,
+          (item: any) => item.code === code,
         );
 
         if (itemIndex !== -1) {
           // Update the found item with the payload
           const updatedItem = {...parsedData[itemIndex], ...payload};
           parsedData[itemIndex] = updatedItem;
-
+          console.log('updated data', updatedItem);
           // Save the updated data back to AsyncStorage
           await AsyncStorage.setItem('products', JSON.stringify(parsedData));
         } else {

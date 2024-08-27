@@ -7,7 +7,6 @@ import {
   TouchableRipple,
   Button,
 } from 'react-native-paper';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Camera,
   Code,
@@ -25,7 +24,7 @@ import beepSound from '../assets/store-scanner-beep-90395.mp3';
 import Loading from '../components/Loading';
 import {danger, primary, primary50, textColor} from '../constants/colors';
 
-interface BarcodeScannerRoute {
+interface ScannerRoute {
   params: {
     scannedData: {
       barcode: string;
@@ -36,7 +35,7 @@ interface BarcodeScannerRoute {
   path?: string | undefined;
 }
 
-const BarcodeScanner: FC = () => {
+const Scanner: FC = () => {
   const [qrData, setQrData] = useState('');
   const [loading, setLoading] = useState(false);
   const {hasPermission, requestPermission} = useCameraPermission();
@@ -44,13 +43,14 @@ const BarcodeScanner: FC = () => {
   const navigation = useNavigation<{
     navigate: (name: string, params: Record<string, any>) => void;
   }>();
-  const route = useRoute<BarcodeScannerRoute>();
+  const route = useRoute<ScannerRoute>();
 
-  const handleBarCodeScanned = (codes: Code[]) => {
+  const onScanned = (codes: Code[]) => {
     if (codes.length > 0) {
       SoundPlayer.playAsset(beepSound);
+
       setQrData(codes?.[0]?.value?.substring(1) || '');
-      console.log(codes);
+
       navigation.navigate('OpnameForm', {
         barcode: codes?.[0]?.value?.startsWith('0')
           ? codes[0].value.substring(1)
@@ -61,7 +61,7 @@ const BarcodeScanner: FC = () => {
 
   const codeScanner = useCodeScanner({
     codeTypes: ['ean-13', 'code-128', 'code-39', 'code-93', 'ean-8'],
-    onCodeScanned: handleBarCodeScanned,
+    onCodeScanned: onScanned,
   });
 
   const onRequestPermission = useCallback(async () => {
@@ -95,17 +95,11 @@ const BarcodeScanner: FC = () => {
     }
   }, [hasPermission, onRequestPermission, route.params?.scannedData?.barcode]);
 
-  const handleInputCode = (val: string) => {
+  const onChangeCode = (val: string) => {
     setQrData(val);
   };
 
-  const handleSubmitCode = () =>
-    handleBarCodeScanned([{type: 'unknown', value: qrData}]);
-
-  // const onDismiss = async () => {
-  //   await AsyncStorage.removeItem('@filteredData');
-  //   setQrData('');
-  // };
+  const onSubmitCode = () => onScanned([{type: 'unknown', value: qrData}]);
 
   if (!hasPermission) {
     return (
@@ -149,8 +143,8 @@ const BarcodeScanner: FC = () => {
         <TextInput
           mode="outlined"
           style={styles.input}
-          onChangeText={handleInputCode}
-          onSubmitEditing={handleSubmitCode}
+          onChangeText={onChangeCode}
+          onSubmitEditing={onSubmitCode}
           keyboardType="numeric"
           textContentType="telephoneNumber"
           value={qrData}
@@ -164,7 +158,7 @@ const BarcodeScanner: FC = () => {
         <TouchableRipple
           style={[styles.btnSubmit, !qrData ? styles.btnSubmitDisabled : {}]}
           disabled={!qrData}
-          onPress={handleSubmitCode}>
+          onPress={onSubmitCode}>
           <Text style={styles.txtSubmit}>Cari Produk</Text>
         </TouchableRipple>
       </View>
@@ -239,4 +233,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BarcodeScanner;
+export default Scanner;
