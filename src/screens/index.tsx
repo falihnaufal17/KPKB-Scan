@@ -4,7 +4,7 @@ import Home from './Home';
 import SignIn from './SignIn';
 import BarcodeScanner from './BarcodeScanner';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {setDataExcel} from '../reducers/document';
+import {setDataExcel} from '../reducers/product';
 import OpnameForm from './OpnameForm';
 import {useAppDispatch, useAppSelector} from '../store';
 
@@ -60,6 +60,8 @@ const Screen = () => {
           component={OpnameForm}
           options={{
             animation: 'slide_from_bottom',
+            headerShown: true,
+            headerTitle: 'Opname Stok',
           }}
         />
       </Stack.Navigator>

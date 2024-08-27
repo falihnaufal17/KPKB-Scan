@@ -1,20 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import 'react-native-get-random-values';
-import {v4 as uuidv4} from 'uuid';
-import {clearDocumentAsync} from './document';
-
-type AuthPayload = {
-  token: string;
-  userToken?: string | null;
-  name: string;
-} | null;
-
-type AuthState = {
-  name: string;
-  userToken: string | null;
-  loading: boolean;
-};
+import {AuthPayload, AuthState} from '../types/auth';
 
 const initialState: AuthState = {
   name: '',
@@ -26,15 +12,12 @@ export const auth = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    updateName: (state, action: PayloadAction<string>) => {
-      state.name = action.payload;
-    },
     signIn: (state, action: PayloadAction<AuthPayload>) => {
       state.loading = false;
       state.name = action.payload?.name || '';
       state.userToken = action.payload?.token || '';
     },
-    restoreToken: (state, action: PayloadAction<Partial<AuthPayload>>) => {
+    setToken: (state, action: PayloadAction<Partial<AuthPayload>>) => {
       state.userToken = action.payload?.userToken ?? null;
       state.name = action.payload?.name ?? '';
       state.loading = false;
@@ -47,23 +30,6 @@ export const auth = createSlice({
   },
 });
 
-export const {signIn, updateName, restoreToken, signOut} = auth.actions;
-
-export const signInAsync = (name: string) => async (dispatch: any) => {
-  const generatedToken = uuidv4();
-  await AsyncStorage.setItem(
-    'biodata',
-    JSON.stringify({name, userToken: generatedToken}),
-  );
-
-  dispatch(signIn({token: generatedToken, name}));
-};
-
-export const signOutAsync = () => async (dispatch: any) => {
-  await AsyncStorage.clear();
-
-  dispatch(signOut());
-  dispatch(clearDocumentAsync({message: 'Data berhasil dibersihkan'}));
-};
+export const {signIn, setToken, signOut} = auth.actions;
 
 export default auth.reducer;

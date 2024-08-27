@@ -1,6 +1,8 @@
 import React, {FC} from 'react';
 import {StyleSheet} from 'react-native';
 import {FAB, MD3Colors} from 'react-native-paper';
+import {primary} from '../constants/colors';
+import ScanBarcodeWhite from '../assets/icons/ScanBarcodeWhite';
 
 interface ScannerProps {
   navigation: {
@@ -12,7 +14,7 @@ interface ScannerProps {
 const Scanner: FC<ScannerProps> = ({navigation}) => {
   return (
     <FAB
-      icon="barcode-scan"
+      icon={ScanBarcodeWhite}
       style={styles.fab}
       color={MD3Colors.primary100}
       onPress={() => navigation.push('Barcode')}
@@ -28,6 +30,6 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: MD3Colors.primary10,
+    backgroundColor: primary,
   },
 });

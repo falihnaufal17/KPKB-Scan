@@ -1,10 +1,10 @@
 import React, {FC} from 'react';
 import {Appbar, Menu, TouchableRipple, Text} from 'react-native-paper';
 import {Image, StyleSheet, View} from 'react-native';
-import {signOutAsync} from '../reducers/auth';
 import {useAppDispatch, useAppSelector} from '../store';
 import KPKBLogo from '../assets/logo-kpkb-2.png';
 import {textColor} from '../constants/colors';
+import {signOutAsync} from '../actions/auth';
 
 interface HeaderProps {
   title: string;

@@ -13,11 +13,11 @@ import Loading from '../components/Loading';
 import ListHeader from '../components/ListHeader';
 import LoadingPopup from '../components/LoadingPopup';
 import Scanner from '../components/Scanner';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useAppSelector} from '../store';
+import {useAppDispatch, useAppSelector} from '../store';
 import GuidelineModal from '../components/GuidelineModal';
 import ScanBarcode from '../assets/icons/ScanBarcode';
 import {textColor} from '../constants/colors';
+import {getProductsAsync} from '../actions/product';
 
 interface HomeProps {
   navigation: {
@@ -28,9 +28,10 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({navigation}) => {
   const {loading, message, data, loadingDownload} = useAppSelector(
-    state => state.document,
+    state => state.product,
   );
   const [showGuideline, setShowGuideline] = useState(false);
+  const dispatch = useAppDispatch();
 
   const onToggleGuideline = () => setShowGuideline(!showGuideline);
 
@@ -40,20 +41,13 @@ const Home: FC<HomeProps> = ({navigation}) => {
     }
   }, [message]);
 
+  // useEffect(() => {
+
+  // }, [data, navigation.navigate]);
+
   useEffect(() => {
-    const fetchFromLocal = async () => {
-      const scannedDataAsync = await AsyncStorage.getItem('@filteredData');
-      const scannedData = scannedDataAsync
-        ? JSON.parse(scannedDataAsync)
-        : null;
-
-      if (scannedData) {
-        navigation.navigate('Barcode', {scannedData});
-      }
-    };
-
-    fetchFromLocal();
-  }, [data, navigation.navigate]);
+    dispatch(getProductsAsync());
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -71,17 +65,15 @@ const Home: FC<HomeProps> = ({navigation}) => {
         ) : data.length > 0 ? (
           <>
             <Text style={styles.title}>Data berhasil diunggah!</Text>
-            <Text style={styles.description}>
+            <Text style={[styles.description, styles.descriptionCount]}>
               Terdeteksi <Text style={{fontWeight: '800'}}>{data.length}</Text>{' '}
               data produk
             </Text>
             <View style={styles.descriptionContainer}>
-              <Text style={{textAlign: 'center'}}>Silakan klik ikon</Text>
+              <Text style={styles.description}>Silakan klik ikon</Text>
               <ScanBarcode />
-              <Text>
-                untuk melakukan scan barcode pada produk atau lakukan aksi di
-                bawah ini
-              </Text>
+              <Text style={styles.description}>untuk melakukan pemindaian</Text>
+              <Text style={styles.description}>pada barcode produk</Text>
             </View>
             <ListHeader data={data} />
           </>
@@ -109,11 +101,19 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
+    columnGap: 8,
+    justifyContent: 'center',
+    marginBottom: 20,
   },
   description: {
     fontSize: 14,
     color: textColor,
     textAlign: 'center',
+    fontFamily: 'Roboto-Medium',
+  },
+  descriptionCount: {
+    marginBottom: 16,
   },
 });

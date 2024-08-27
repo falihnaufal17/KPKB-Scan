@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -8,15 +8,16 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {Text, TextInput, Button, ActivityIndicator} from 'react-native-paper';
-import {restoreToken, signInAsync, updateName} from '../reducers/auth';
 import {useAppDispatch, useAppSelector} from '../store';
 import {primary, textColor} from '../constants/colors';
 import KPKBLogo from '../assets/logo-kpkb-2.png';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {restoreToken, signInAsync} from '../actions/auth';
 
 const SignIn: FC = () => {
-  const {name, loading} = useAppSelector(state => state.auth);
+  const {loading} = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
+  const [fullName, setFullName] = useState('');
 
   useEffect(() => {
     const bootstrapAsync = async () => {
@@ -33,12 +34,18 @@ const SignIn: FC = () => {
     bootstrapAsync();
   }, []);
 
-  const onSubmit = () => {
-    if (!name) {
+  const onSignIn = () => {
+    if (!fullName) {
       return;
     }
 
-    dispatch(signInAsync(name.trimStart()));
+    dispatch(signInAsync(fullName.trimStart()));
+  };
+
+  const onChange = (value: string) => {
+    const alphabeticValue = value.replace(/[^a-zA-Z\s]/g, '');
+
+    setFullName(alphabeticValue);
   };
 
   return (
@@ -72,20 +79,20 @@ const SignIn: FC = () => {
               <TextInput
                 mode="outlined"
                 style={{marginBottom: 16}}
-                onChangeText={v => dispatch(updateName(v.trimStart()))}
-                onSubmitEditing={onSubmit}
+                onSubmitEditing={onSignIn}
                 keyboardType="default"
                 textContentType="name"
-                value={name}
                 placeholder="Masukkan Nama Lengkap"
                 placeholderTextColor="#99A1B7"
                 outlineStyle={styles.inputOutline}
                 activeOutlineColor={primary}
                 contentStyle={styles.inputContent}
+                outlineColor="#C4CADA"
+                onChangeText={onChange}
               />
               <Button
-                disabled={name.length <= 3}
-                onPress={onSubmit}
+                disabled={fullName.length <= 3}
+                onPress={onSignIn}
                 buttonColor={primary}
                 mode="contained"
                 style={styles.button}>
@@ -132,7 +139,6 @@ const styles = StyleSheet.create({
   inputOutline: {
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#C4CADA',
   },
   inputContent: {
     padding: 12,

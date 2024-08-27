@@ -2,11 +2,11 @@ import React, {FC} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Text} from 'react-native-paper';
 import {Button} from 'react-native-paper';
-import {uploadDocumentAsync} from '../reducers/document';
 import {useAppDispatch} from '../store';
 import {primary, textColor} from '../constants/colors';
 import Warning from '../assets/icons/Warning';
 import BookSquare from '../assets/icons/BookSquare';
+import {uploadDocumentAsync} from '../actions/product';
 
 interface ListEmptyProps {
   onShowGuideline: () => void;

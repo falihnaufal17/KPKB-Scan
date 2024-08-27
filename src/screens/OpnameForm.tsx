@@ -1,9 +1,11 @@
 import React, {useEffect, useState, useMemo, FC} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Text, TextInput, Button, MD3Colors} from 'react-native-paper';
-import {updateDocumentAsync, uploadDocument} from '../reducers/document';
+import {View, StyleSheet, SafeAreaView} from 'react-native';
+import {Text, Button} from 'react-native-paper';
+import {updateDocumentAsync, uploadDocument} from '../reducers/product';
 import {useAppDispatch, useAppSelector} from '../store';
 import {useRoute} from '@react-navigation/native';
+import {danger, primary, textColor} from '../constants/colors';
+import Input from '../components/atoms/Input';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface OpnameFormRoute {
@@ -18,8 +20,8 @@ interface OpnameFormRoute {
 
 const OpnameForm: FC = ({}) => {
   const {data} = useAppSelector(s => s.document);
-  const [qty, setQty] = useState(0);
-  const [filteredData] = useState<any>({});
+  const [qty, setQty] = useState<string>('');
+  const [filteredData, setFilteredData] = useState<any>({});
   const [selisih, setSelisih] = useState(0);
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -29,6 +31,7 @@ const OpnameForm: FC = ({}) => {
   // Memoize the creation of a Map for fast lookups
   const dataMap = useMemo(() => {
     const map = new Map();
+
     data.forEach(item => {
       if (item.barcode) {
         map.set(item.barcode.toString(), item);
@@ -37,16 +40,25 @@ const OpnameForm: FC = ({}) => {
     return map;
   }, [data]);
 
+  const onChangeQty = (value: string) => {
+    const numericText = value.replace(/[^0-9]/g, '');
+
+    setQty(numericText);
+    const calculateSelisih =
+      parseInt(numericText) - parseInt(filteredData.qtysystem);
+    setSelisih(isNaN(calculateSelisih) ? 0 : calculateSelisih);
+  };
+
   useEffect(() => {
     if (barcode) {
       // Use the Map for fast lookup
-      // const filterData = dataMap.get(barcode.toString());
-      console.log(barcode);
+      const filterData = dataMap.get(barcode.toString());
+
       // if (filterData) {
       //   saveToLocal(filterData);
       // }
 
-      // setFilteredData(filterData);
+      setFilteredData(filterData);
     }
   }, [barcode, dataMap]);
 
@@ -63,72 +75,59 @@ const OpnameForm: FC = ({}) => {
   // }, [filteredData?.selisih]);
 
   return (
-    <View>
-      {/* <Animatable.View animation="slideInRight" duration={800}> */}
-      <Text variant="titleLarge" style={{marginBottom: 8, textAlign: 'center'}}>
-        Tambah kuantitas
-      </Text>
-      <Text
-        variant="titleLarge"
-        selectable
-        style={{marginBottom: 24, textAlign: 'center'}}>
-        {filteredData?.nama}
+    <SafeAreaView style={styles.container}>
+      <Text selectable style={styles.title}>
+        {filteredData?.nama || ''}
       </Text>
       <View style={styles.row}>
-        <Text variant="bodyMedium">Barcode Terdeteksi</Text>
-        <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+        <Text style={styles.label}>Barcode</Text>
+        <Text style={styles.value} selectable>
           {barcode}
         </Text>
       </View>
       <View style={styles.row}>
-        <Text variant="bodyMedium">Kode Barang</Text>
-        <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+        <Text style={styles.label}>Kode Barang</Text>
+        <Text style={styles.value} selectable>
           {filteredData?.kodebarang}
         </Text>
       </View>
       <View style={styles.row}>
-        <Text variant="bodyMedium">Jumlah</Text>
-        <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+        <Text style={styles.label}>Stok</Text>
+        <Text style={styles.value} selectable>
           {qty ?? '-'}
         </Text>
       </View>
       <View style={styles.row}>
-        <Text variant="bodyMedium">Jumlah Pada Sistem</Text>
-        <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+        <Text style={styles.label}>Stok Pada Sistem</Text>
+        <Text style={styles.value} selectable>
           {filteredData?.qtysystem ?? '-'}
         </Text>
       </View>
       <View style={styles.row}>
-        <Text variant="bodyMedium">Selisih</Text>
-        <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+        <Text style={styles.label}>Selisih</Text>
+        <Text style={styles.value} selectable>
           {selisih ?? '-'}
         </Text>
       </View>
       <View style={styles.row}>
-        <Text variant="bodyMedium" style={{marginBottom: 16}}>
-          Unit
-        </Text>
-        <Text variant="bodyMedium" selectable style={{fontWeight: '700'}}>
+        <Text style={styles.label}>Unit</Text>
+        <Text style={styles.value} selectable>
           {filteredData?.unit}
         </Text>
       </View>
-      <TextInput
-        label="Jumlah"
-        mode="outlined"
-        placeholder="Masukan jumlah"
-        keyboardType="number-pad"
-        style={styles.qty}
-        onChangeText={v => {
-          const numberValue = Number(v);
-
-          setQty(numberValue);
-          setSelisih(numberValue - filteredData?.qtysystem);
-        }}
-      />
+      <View style={styles.formGroup}>
+        <Input
+          placeholder="Masukkan jumlah stok terbaru"
+          keyboardType="number-pad"
+          onChangeText={onChangeQty}
+          value={qty}
+        />
+      </View>
       <Button
         mode="contained"
-        style={{marginBottom: 16, paddingVertical: 4}}
-        labelStyle={{fontSize: 16}}
+        buttonColor={primary}
+        style={styles.button}
+        labelStyle={styles.buttonLabel}
         loading={loading}
         disabled={loading}
         onPress={async () => {
@@ -170,18 +169,39 @@ const OpnameForm: FC = ({}) => {
       </Button>
       <Button
         mode="contained"
-        style={{marginBottom: 16, paddingVertical: 4}}
-        labelStyle={{fontSize: 16}}
-        buttonColor={MD3Colors.error50}
+        style={styles.button}
+        labelStyle={styles.buttonLabel}
+        buttonColor={danger}
         onPress={onDismiss}>
         Batal
       </Button>
-      {/* </Animatable.View> */}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFF',
+    padding: 20,
+  },
+  title: {
+    color: textColor,
+    fontSize: 20,
+    fontFamily: 'Roboto-Medium',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  label: {
+    color: textColor,
+    fontSize: 14,
+    fontFamily: 'Roboto-Medium',
+  },
+  value: {
+    color: textColor,
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular',
+  },
   containerStyle: {
     backgroundColor: '#FFF',
     padding: 20,
@@ -197,7 +217,18 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 16,
+  },
+  button: {
+    borderRadius: 6,
+    marginBottom: 16,
+  },
+  buttonLabel: {
+    fontFamily: 'Roboto-Medium',
+    fontSize: 13,
+  },
+  formGroup: {
+    marginBottom: 16,
   },
 });
 

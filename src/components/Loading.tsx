@@ -1,6 +1,7 @@
 import React, {FC} from 'react';
 import {ActivityIndicator} from 'react-native-paper';
 import {View, StyleSheet, Text, TextStyle} from 'react-native';
+import {primary} from '../constants/colors';
 
 interface LoadingProps {
   labelStyle?: TextStyle;
@@ -13,7 +14,7 @@ const Loading: FC<LoadingProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <ActivityIndicator size={64} />
+      <ActivityIndicator size={64} color={primary} />
       <Text style={[styles.label, labelStyle]}>{label}</Text>
     </View>
   );

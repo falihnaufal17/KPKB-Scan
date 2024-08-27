@@ -23,6 +23,7 @@ import {
 import SoundPlayer from 'react-native-sound-player';
 import beepSound from '../assets/store-scanner-beep-90395.mp3';
 import Loading from '../components/Loading';
+import {danger, primary, primary50, textColor} from '../constants/colors';
 
 interface BarcodeScannerRoute {
   params: {
@@ -49,8 +50,11 @@ const BarcodeScanner: FC = () => {
     if (codes.length > 0) {
       SoundPlayer.playAsset(beepSound);
       setQrData(codes?.[0]?.value?.substring(1) || '');
+      console.log(codes);
       navigation.navigate('OpnameForm', {
-        barcode: codes?.[0]?.value?.substring(1),
+        barcode: codes?.[0]?.value?.startsWith('0')
+          ? codes[0].value.substring(1)
+          : codes[0].value,
       });
     }
   };
@@ -139,23 +143,29 @@ const BarcodeScanner: FC = () => {
         />
       )}
       <View style={styles.formGroup}>
-        <Text variant="bodyMedium" style={{marginBottom: 8}}>
-          Barcode sulit terdeteksi? masukan kode ke sini
+        <Text style={styles.formLabel}>
+          Barcode sulit dideteksi? Masukkan kode di bawah ini
         </Text>
         <TextInput
-          style={styles.formControl}
-          keyboardType="number-pad"
+          mode="outlined"
+          style={styles.input}
           onChangeText={handleInputCode}
           onSubmitEditing={handleSubmitCode}
+          keyboardType="numeric"
+          textContentType="telephoneNumber"
           value={qrData}
-          placeholder="Masukan kode"
-          mode="outlined"
+          placeholder="Masukkan Nama Lengkap"
+          placeholderTextColor="#99A1B7"
+          outlineStyle={styles.inputOutline}
+          activeOutlineColor={primary}
+          contentStyle={styles.inputContent}
+          outlineColor="#C4CADA"
         />
         <TouchableRipple
           style={[styles.btnSubmit, !qrData ? styles.btnSubmitDisabled : {}]}
           disabled={!qrData}
           onPress={handleSubmitCode}>
-          <Text style={styles.txtSubmit}>Submit</Text>
+          <Text style={styles.txtSubmit}>Cari Produk</Text>
         </TouchableRipple>
       </View>
     </SafeAreaView>
@@ -184,16 +194,16 @@ const styles = StyleSheet.create({
   },
   btnSubmit: {
     paddingVertical: 12,
-    backgroundColor: MD3Colors.primary40,
-    marginBottom: 16,
-    borderRadius: 10,
+    backgroundColor: primary,
+    borderRadius: 6,
   },
   btnSubmitDisabled: {
-    backgroundColor: MD3Colors.secondary70,
+    backgroundColor: primary50,
   },
   txtSubmit: {
     textAlign: 'center',
-    color: MD3Colors.primary100,
+    color: '#FFF',
+    fontFamily: 'Roboto-Medium',
   },
   errorContainer: {
     flex: 1,
@@ -201,21 +211,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    color: MD3Colors.error40,
+    color: danger,
     fontSize: 16,
     letterSpacing: 0.8,
     marginBottom: 16,
   },
   formGroup: {
     backgroundColor: '#FFF',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    padding: 20,
   },
-  formControl: {
+  formLabel: {
+    color: textColor,
+    fontSize: 14,
+    marginBottom: 10,
+    fontFamily: 'Roboto-Medium',
+  },
+  inputOutline: {
+    borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 10,
-    marginBottom: 16,
+  },
+  inputContent: {
+    padding: 12,
+    color: textColor,
+  },
+  input: {
+    marginBottom: 10,
   },
 });
 
