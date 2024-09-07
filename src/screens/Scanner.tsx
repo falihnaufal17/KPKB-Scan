@@ -148,7 +148,7 @@ const Scanner: FC = () => {
           keyboardType="numeric"
           textContentType="telephoneNumber"
           value={qrData}
-          placeholder="Masukkan Nama Lengkap"
+          placeholder="Masukkan kode"
           placeholderTextColor="#99A1B7"
           outlineStyle={styles.inputOutline}
           activeOutlineColor={primary}

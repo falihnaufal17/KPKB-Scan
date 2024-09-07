@@ -8,3 +8,17 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+-dontwarn com.google.mlkit.vision.barcode.Barcode$Address
+-dontwarn com.google.mlkit.vision.barcode.Barcode$CalendarDateTime
+-dontwarn com.google.mlkit.vision.barcode.Barcode$CalendarEvent
+-dontwarn com.google.mlkit.vision.barcode.Barcode$ContactInfo
+-dontwarn com.google.mlkit.vision.barcode.Barcode$DriverLicense
+-dontwarn com.google.mlkit.vision.barcode.Barcode$Email
+-dontwarn com.google.mlkit.vision.barcode.Barcode$GeoPoint
+-dontwarn com.google.mlkit.vision.barcode.Barcode$PersonName
+-dontwarn com.google.mlkit.vision.barcode.Barcode$Phone
+-dontwarn com.google.mlkit.vision.barcode.Barcode$Sms
+-dontwarn com.google.mlkit.vision.barcode.Barcode$UrlBookmark
+-dontwarn com.google.mlkit.vision.barcode.Barcode$WiFi
+-dontwarn com.google.mlkit.vision.barcode.Barcode
+-dontwarn com.google.mlkit.vision.common.internal.Detector
